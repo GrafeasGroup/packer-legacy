@@ -1,6 +1,8 @@
 ---
-- hosts: packer
+- name: Provision Packer image
+  hosts: packer
   tasks:
-    - ping:
+    - name: Alive Check
+      ping:
     # - import_role:
     #     name: os_base
