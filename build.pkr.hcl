@@ -11,6 +11,8 @@ build {
     # Because CentOS:
     sftp_command = "/usr/libexec/openssh/sftp-server -e"
 
+    groups = ["packer"]
+
     # Paths to files and locations
     playbook_file       = "${path.root}/ansible/site.yml"
     galaxy_file         = "${path.root}/ansible/requirements.yml"

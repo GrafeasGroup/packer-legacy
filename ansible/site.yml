@@ -1,5 +1,5 @@
 ---
-- hosts: default
+- hosts: packer
   tasks:
     - ping:
     # - import_role:
