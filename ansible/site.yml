@@ -1,0 +1,6 @@
+---
+- hosts: default
+  tasks:
+    - ping:
+    # - import_role:
+    #     name: os_base
