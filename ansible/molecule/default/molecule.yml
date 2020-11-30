@@ -11,7 +11,7 @@ lint: |
   flake8
 platforms:
   - name: instance
-    image: centos:8
+    image: docker.io/pycontribs/centos:8
     tmpfs:
       - /run
       - /tmp
@@ -25,7 +25,5 @@ platforms:
       - packer
 provisioner:
   name: ansible
-scenario:
-  name: default
 verifier:
   name: ansible

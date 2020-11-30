@@ -1,8 +1,16 @@
 ---
 - name: Provision Packer image
-  hosts: packer
-  tasks:
+  hosts: all
+
+  vars:
+    python_version: '3.9.0'
+
+  pre_tasks:
     - name: Alive Check
       ping:
-    # - import_role:
-    #     name: os_base
+      retries: 5
+      delay: 3
+
+  roles:
+    - grafeas.os_base
+    - thelonelyghost.python
