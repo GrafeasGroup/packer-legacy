@@ -1,8 +1,7 @@
 ---
 dependency:
-  name: galaxy
-  role-file: ../../requirements.yml
-  requirements-file: ../../requirements.yml
+  name: shell
+  command: ansible-galaxy install -r ./requirements.yml
 driver:
   name: docker
 lint: |
