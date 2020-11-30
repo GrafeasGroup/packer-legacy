@@ -1,0 +1,9 @@
+---
+# vars file for thelonelyghost.python
+python_bin: '{{ python_bin_dir }}/{{ python_executable_name }}'
+python_executable_name: 'python{{ python_version_major_minor }}'
+python_executable_names:
+  - '{{ python_executable_name }}'
+  - 'python{{ python_version.split(".")[0:1] | join(".") }}'
+  - 'python'
+python_version_major_minor: '{{ python_version.split(".")[0:2] | join(".") }}'

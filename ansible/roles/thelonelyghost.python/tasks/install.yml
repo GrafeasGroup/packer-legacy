@@ -1,0 +1,56 @@
+---
+
+- name: Include OS-specific vars
+  include_vars:
+    name: python_system
+    file: './dependencies/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml'
+
+- name: Temp build directory
+  file:
+    state: directory
+    path: /tmp/python-build-dir
+    mode: '700'
+
+- name: 'Check for prior build attempts'
+  stat:
+    path: /tmp/python-build-dir/Python-{{ python_version }}
+  register: prior_art
+
+- name: Download Python source
+  unarchive:
+    dest: /tmp/python-build-dir
+    remote_src: true
+    src: '{{ python_download_url }}'
+  when: not prior_art.stat.exists
+
+- name: Install system dependencies
+  package:
+    name: '{{ python_system.dependencies + python_system.extensions }}'
+    state: present
+  become: true
+
+- name: Configure installer
+  command:
+    cmd: ./configure --prefix={{ python_prefix | quote }} --enable-optimizations --enable-profiling --with-lto --with-assertions --with-ensurepip=upgrade
+    creates: /tmp/python-build-dir/Python-{{ python_version }}/Makefile
+  args:
+    chdir: /tmp/python-build-dir/Python-{{ python_version }}
+
+- name: Compile Python @ {{ python_version }}
+  community.general.make:
+    target: all
+    chdir: /tmp/python-build-dir/Python-{{ python_version }}
+
+- name: Install Python to {{ python_bin_dir }}
+  community.general.make:
+    target: install
+    chdir: /tmp/python-build-dir/Python-{{ python_version }}
+  become: true
+
+- name: Cleanup temp dir
+  file:
+    state: absent
+    path: /tmp/python-build-dir
+  become: true
+
+# vim: ft=yaml.ansible

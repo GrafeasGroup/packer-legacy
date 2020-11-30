@@ -1,0 +1,16 @@
+---
+- stat:
+    path: '{{ python_bin }}'
+  register: py_path
+
+- name: 'Python exists at {{ python_bin }}'
+  assert:
+    quiet: true
+    that: py_path.stat.exists
+
+- name: '{{ python_bin }} is executable'
+  assert:
+    quiet: true
+    that: py_path.stat.exists and py_path.stat.executable
+
+- import_tasks: ./version.yml

@@ -1,0 +1,11 @@
+---
+- command: '{{ python_bin }} --version'
+  when: py_path.stat.exists and py_path.stat.executable
+  register: py_version
+  changed_when: false
+
+- name: 'Python version is at least 3.9'
+  assert:
+    quiet: true
+    fail_msg: "`3.9.` was not found in {{ py_version.stdout }}"
+    that: py_version is defined and '3.9.' in py_version.stdout

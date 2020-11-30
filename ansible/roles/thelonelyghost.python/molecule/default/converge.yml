@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Install Python"
+      import_role:
+        name: thelonelyghost.python
+        # tasks_from: install

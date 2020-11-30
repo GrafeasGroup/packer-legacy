@@ -1,0 +1,21 @@
+---
+
+- name: Examine {{ python_bin }}
+  stat:
+    path: '{{ python_bin }}'
+  register: py_path
+
+- name: Examine {{ python_bin }}'s version
+  command: '{{ python_bin }} --version'
+  when: py_path.stat.exists and py_path.stat.executable
+  register: py_version
+  changed_when: false
+
+- name: Install Python @ {{ python_version }}
+  include_tasks: install.yml
+  when: |
+    (
+      not py_path.stat.exists
+    ) or (
+      (python_version_major_minor ~ '.') not in py_version.stdout
+    )

@@ -1,0 +1,16 @@
+---
+dependencies:
+  - gcc
+  - openssl-devel
+  - bzip2-devel
+  - libffi-devel
+
+extensions:
+  - readline-devel
+  - sqlite-devel
+  - gdbm-devel
+  - libuuid-devel
+  - xz-devel
+  - glibc-devel
+
+# vim: ft=yaml.ansible

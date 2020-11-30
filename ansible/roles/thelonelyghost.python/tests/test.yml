@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  remote_user: root
+  tasks:
+    - import_role:
+        name: thelonelyghost.python
