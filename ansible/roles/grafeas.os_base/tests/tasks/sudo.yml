@@ -1,0 +1,25 @@
+---
+- stat:
+    path: /etc/sudoers.d/sudo
+  register: sudoers
+
+- name: Sudoers file exists
+  assert:
+    quiet: true
+    that: sudoers.stat.exists
+
+- shell: cat /etc/sudoers.d/sudo
+  register: sudoers_content
+  changed_when: false
+
+- name: 'Sudoers file configures a group called `sudo`'
+  assert:
+    quiet: true
+    that: "sudoers.stat.exists and '%sudo ' in sudoers_content.stdout"
+
+- name: 'Sudoers file does requires password for sudo'
+  assert:
+    quiet: true
+    that: "sudoers.stat.exists and ('NOPASSWD: ' not in sudoers_content.stdout)"
+
+# vim: ft=yaml.ansible

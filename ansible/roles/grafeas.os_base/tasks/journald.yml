@@ -1,0 +1,10 @@
+---
+- name: Create journald persistence directory
+  file:
+    state: directory
+    path: /var/log/journal
+    mode: '700'
+  become: true
+  notify: restart journald
+
+# vim: ft=yaml.ansible

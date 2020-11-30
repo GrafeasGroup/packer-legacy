@@ -1,0 +1,42 @@
+---
+
+- name: Create 'bot' user account
+  user:
+    name: '{{ bot_username | mandatory }}'
+    comment: automation-only user
+    shell: /bin/false
+  become: true
+
+- name: "Create '~/.ssh' directory for '{{ bot_username }}'"
+  file:
+    state: directory
+    path: '/home/{{ bot_username }}/.ssh'
+    owner: '{{ bot_username }}'
+    group: '{{ bot_username }}'
+    mode: '700'
+  become: true
+
+- name: "Assign public key to login as '{{ bot_username }}'"
+  lineinfile:
+    line: '{{ bot_public_key }}'
+    path: '/home/{{ bot_username }}/.ssh/authorized_keys'
+    create: true
+    backup: true
+    owner: '{{ bot_username }}'
+    group: '{{ bot_username }}'
+    mode: '600'
+  become: true
+
+- name: Allow bot account to run as root (without password prompt)
+  lineinfile:
+    regexp: '^{{ bot_username }} '
+    line: '{{ bot_username }} ALL=(ALL) NOPASSWD: ALL'
+    path: /etc/sudoers.d/bot
+    validate: '/usr/sbin/visudo -cf %s'
+    create: true
+    owner: root
+    group: root
+    mode: '440'
+  become: true
+
+# vim: ft=yaml.ansible

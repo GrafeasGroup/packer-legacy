@@ -1,0 +1,8 @@
+---
+exclude_paths:
+  - ./tests/
+
+skip_list:
+  - '106'  # Ansible-Lint doesn't like Galaxy's namespacing convention: {username}.{role_name}
+
+# vim: ft=yaml

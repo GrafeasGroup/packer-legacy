@@ -1,0 +1,9 @@
+---
+- name: Enable EPEL repositories
+  package:
+    name: epel-release
+    state: present
+  notify: update yum cache
+  become: true
+
+# vim: ft=yaml.ansible

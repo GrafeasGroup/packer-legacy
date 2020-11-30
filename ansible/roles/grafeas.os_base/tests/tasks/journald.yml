@@ -1,0 +1,41 @@
+---
+- stat:
+    path: '/var/log/journal'
+  register: journald_log
+
+- name: '/var/log/journal exists'
+  assert:
+    quiet: true
+    that: journald_log.stat.exists
+
+- name: '/var/log/journal is a directory'
+  assert:
+    quiet: true
+    that: journald_log.stat.exists and journald_log.stat.isdir
+
+- name: Populate service facts
+  service_facts:
+
+- name: 'journald service is running'
+  assert:
+    quiet: true
+    that: |
+      (
+        ansible_facts.services['systemd-journald'] is defined
+      ) and (
+        ansible_facts.services['systemd-journald'].state == 'running'
+      ) and (
+        ansible_facts.services['systemd-journald'].enabled
+      )
+
+- name: 'journald service is configured to start on boot'
+  assert:
+    quiet: true
+    that: |
+      (
+        ansible_facts.services['systemd-journald'] is defined
+      ) and (
+        ansible_facts.services['systemd-journald'].enabled
+      )
+
+# vim: ft=yaml.ansible
