@@ -1,0 +1,10 @@
+---
+
+- name: Log all firewall denials to `dmesg` and `journalctl -k`
+  lineinfile:
+    path: /etc/firewalld/firewalld.conf
+    regexp: 'LogDenied='
+    line: 'LogDenied=all'
+  notify: reload firewalld
+
+# vim: ft=yaml.ansible

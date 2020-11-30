@@ -6,6 +6,22 @@
     state: restarted
   become: true
 
+- name: reload firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: |
+    (
+      ansible_facts.services['firewalld.service'] is defined
+    ) and (
+      ansible_facts.services['firewalld.service'].state == 'running'
+    )
+
+- name: restart sshd
+  service:
+    name: "{{ ansible_facts.services['sshd.service'] is defined | ternary('sshd', 'ssh') }}"
+    state: restarted
+
 - name: yum makecache
   listen: update yum cache
   yum:

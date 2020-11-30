@@ -1,8 +1,14 @@
 ---
 
+- name: Update Ansible facts with service information
+  service_facts:
+
 - import_tasks: epel.yml
   when: ansible_os_family == 'RedHat'
 - import_tasks: journald.yml
   when: ansible_service_mgr == 'systemd'
+- import_tasks: firewalld.yml
+  when: ansible_os_family == 'RedHat'
 - import_tasks: bot_account.yml
 - import_tasks: sudoers.yml
+- import_tasks: sshd.yml

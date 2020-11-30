@@ -1,0 +1,62 @@
+---
+
+- name: 'Set SSH port to {{ ssh_port }}'
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^(#+\s*Port|Port 22)'
+    line: 'Port {{ ssh_port }}'
+    group: root
+    owner: root
+    mode: '644'
+  when: ssh_port != 22
+
+- name: Disallow remote root login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^(#+\s*PermitRootLogin|PermitRootLogin yes)'
+    line: 'PermitRootLogin no'
+    group: root
+    owner: root
+    mode: '644'
+
+- name: Disallow password authentication over SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^(#+\s*PasswordAuthentication|PasswordAuthentication yes)'
+    line: 'PasswordAuthentication no'
+    group: root
+    owner: root
+    mode: '644'
+  notify: restart sshd
+
+- name: 'Permit port {{ ssh_port }} in SELinux configuration'
+  community.general.seport:
+    ports: '{{ (ssh_port ~ ",22").split(",") ] | unique | join(",") }}'
+    proto: tcp
+    setype: ssh_port_t
+    state: present
+  when: ansible_selinux is defined and ansible_selinux_python_present
+
+- name: Update Ansible facts with service information
+  service_facts:
+
+- name: 'Permit port {{ ssh_port }} through firewalld'
+  ansible.posix.firewalld:
+    port: '{{ ssh_port }}/tcp'
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+  when: ansible_facts.services['firewalld.service'] is defined
+
+- name: 'Permit port ssh ports from public zone in firewalld'
+  ansible.posix.firewalld:
+    zone: public
+    service: ssh
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+  when: ansible_facts.services['firewalld.service'] is defined
+
+# vim: ft=yaml.ansible

@@ -17,15 +17,11 @@
   become: true
 
 - name: "Assign public key to login as '{{ bot_username }}'"
-  lineinfile:
-    line: '{{ bot_public_key }}'
-    path: '/home/{{ bot_username }}/.ssh/authorized_keys'
-    create: true
-    backup: true
-    owner: '{{ bot_username }}'
-    group: '{{ bot_username }}'
-    mode: '600'
-  become: true
+  ansible.posix.authorized_key:
+    user: '{{ bot_username }}'
+    state: present
+    key: '{{ bot_public_key }}'
+    comment: 'automation-account-access'
 
 - name: Allow bot account to run as root (without password prompt)
   lineinfile:
