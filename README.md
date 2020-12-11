@@ -17,7 +17,8 @@ Environment variables set:
 ## Usage
 
 ```bash
-packer build
+packer validate .
+packer build .
 ```
 
 This will generate a new image with the same name (but different id) as any existing `private/` image in the Linode account. It is recommended to clear out images that are not being used by Terraform currently, or on-deck to be used next.
