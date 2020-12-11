@@ -3,7 +3,7 @@
 - name: 'Set SSH port to {{ ssh_port }}'
   lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: '^(#+\s*Port|Port 22)'
+    regexp: '^(#+\s*Port|Port) '
     line: 'Port {{ ssh_port }}'
     group: root
     owner: root
@@ -36,27 +36,5 @@
     setype: ssh_port_t
     state: present
   when: ansible_selinux is defined and ansible_selinux_python_present
-
-- name: Update Ansible facts with service information
-  service_facts:
-
-- name: 'Permit port {{ ssh_port }} through firewalld'
-  ansible.posix.firewalld:
-    port: '{{ ssh_port }}/tcp'
-    state: enabled
-    permanent: true
-    immediate: true
-    offline: true
-  when: ansible_facts.services['firewalld.service'] is defined
-
-- name: 'Permit port ssh ports from public zone in firewalld'
-  ansible.posix.firewalld:
-    zone: public
-    service: ssh
-    state: enabled
-    permanent: true
-    immediate: true
-    offline: true
-  when: ansible_facts.services['firewalld.service'] is defined
 
 # vim: ft=yaml.ansible

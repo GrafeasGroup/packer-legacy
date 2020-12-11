@@ -16,11 +16,19 @@
     ) and (
       ansible_facts.services['firewalld.service'].state == 'running'
     )
+  become: true
 
 - name: restart sshd
   service:
     name: "{{ ansible_facts.services['sshd.service'] is defined | ternary('sshd', 'ssh') }}"
     state: restarted
+  become: true
+
+- name: dnf makecache
+  listen: update dnf cache
+  dnf:
+    update_cache: true
+  become: true
 
 - name: yum makecache
   listen: update yum cache

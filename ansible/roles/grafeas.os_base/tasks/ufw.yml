@@ -1,0 +1,17 @@
+---
+
+- name: 'Set UFW logging'
+  community.general.ufw:
+    logging: 'on'
+
+- name: 'Limit burst attempts to auth via SSH'
+  community.general.ufw:
+    comment: 'Limit burst SSH auth attempts'
+    rule: limit
+    port: ssh
+    proto: tcp
+
+- name: 'Enable UFW'
+  community.general.ufw:
+    state: enabled
+    policy: deny

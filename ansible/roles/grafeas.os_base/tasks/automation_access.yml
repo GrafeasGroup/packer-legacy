@@ -1,6 +1,6 @@
 ---
 
-- name: Create 'bot' user account
+- name: "Create '{{ bot_username}}' user account for automated access"
   user:
     name: '{{ bot_username | mandatory }}'
     comment: automation-only user
@@ -10,15 +10,15 @@
 - name: "Create '~/.ssh' directory for '{{ bot_username }}'"
   file:
     state: directory
-    path: '/home/{{ bot_username }}/.ssh'
-    owner: '{{ bot_username }}'
-    group: '{{ bot_username }}'
+    path: '/home/{{ bot_username | mandatory }}/.ssh'
+    owner: '{{ bot_username | mandatory }}'
+    group: '{{ bot_username | mandatory }}'
     mode: '700'
   become: true
 
 - name: "Assign public key to login as '{{ bot_username }}'"
   ansible.posix.authorized_key:
-    user: '{{ bot_username }}'
+    user: '{{ bot_username | mandatory }}'
     state: present
     key: '{{ bot_public_key }}'
     comment: 'automation-account-access'
@@ -26,7 +26,7 @@
 - name: Allow bot account to run as root (without password prompt)
   lineinfile:
     regexp: '^{{ bot_username }} '
-    line: '{{ bot_username }} ALL=(ALL) NOPASSWD: ALL'
+    line: '{{ bot_username | mandatory }} ALL=(ALL) NOPASSWD: ALL'
     path: /etc/sudoers.d/bot
     validate: '/usr/sbin/visudo -cf %s'
     create: true

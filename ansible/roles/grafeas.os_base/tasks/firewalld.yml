@@ -1,5 +1,25 @@
 ---
 
+- name: Update Ansible facts with service information
+  service_facts:
+
+- name: 'Permit port {{ ssh_port }} through firewalld'
+  ansible.posix.firewalld:
+    port: '{{ ssh_port }}/tcp'
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+
+- name: 'Permit port ssh ports from public zone in firewalld'
+  ansible.posix.firewalld:
+    zone: public
+    service: ssh
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+
 - name: Log all firewall denials to `dmesg` and `journalctl -k`
   lineinfile:
     path: /etc/firewalld/firewalld.conf

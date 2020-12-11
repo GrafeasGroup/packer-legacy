@@ -3,7 +3,7 @@
   package:
     name: epel-release
     state: present
-  notify: update yum cache
+  notify: 'update {{ ansible_pkg_mgr }} cache'
   become: true
 
 # vim: ft=yaml.ansible
