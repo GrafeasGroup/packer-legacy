@@ -22,7 +22,7 @@
 - name: Disallow password authentication over SSH
   lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: '^(#+\s*PasswordAuthentication|PasswordAuthentication yes)'
+    regexp: '^(#+\s*PasswordAuthentication|PasswordAuthentication) '
     line: 'PasswordAuthentication no'
     group: root
     owner: root

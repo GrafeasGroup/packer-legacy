@@ -1,17 +1,25 @@
 ---
 
+# Note, this module shows up as changed on
+# every run due to a bug in the module. The
+# module is written to account for current
+# state, but it seems it doesn't work as
+# expected
 - name: 'Set UFW logging'
   community.general.ufw:
     logging: 'on'
 
-- name: 'Limit burst attempts to auth via SSH'
+- name: 'Limit burst SSH auth attempts'
   community.general.ufw:
-    comment: 'Limit burst SSH auth attempts'
+    comment: 'Limit burst SSH auth attempts to prevent brute force attacks'
     rule: limit
-    port: ssh
-    proto: tcp
+    name: ssh
+    log: true
 
 - name: 'Enable UFW'
   community.general.ufw:
     state: enabled
     policy: deny
+  # Skip in molecule testing, since containers +
+  # kernel modules (iptables) = big problem
+  when: not lookup('env', 'MOLECULE_FILE')

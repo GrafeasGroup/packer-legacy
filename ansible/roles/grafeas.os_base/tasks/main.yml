@@ -1,15 +1,25 @@
 ---
+- name: Install system dependencies
+  include_tasks: '{{ ansible_distribution | lower }}-dependencies.yml'
 - name: Update Ansible facts with service information
   service_facts:
 
-- import_tasks: epel.yml
+- name: Enable EPEL
+  include_tasks: epel.yml
   when: ansible_os_family == 'RedHat'
-- import_tasks: journald.yml
+
+- name: Configure journald
+  include_tasks: journald.yml
   when: ansible_service_mgr == 'systemd'
-- import_tasks: firewalld.yml
+
+- name: Configure firewalld
+  include_tasks: firewalld.yml
   when: ansible_facts.services['firewalld.service'] is defined
-- import_tasks: ufw.yml
+
+- name: Configure UFW
+  include_tasks: ufw.yml
   when: ansible_facts.services['ufw.service'] is defined
+
 - import_tasks: automation_access.yml
 - import_tasks: sudoers.yml
 - import_tasks: sshd.yml

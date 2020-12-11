@@ -1,14 +1,14 @@
 ---
-- name: Create local 'sudo' group
+- name: "Create local '{{ sudo_group }}' group"
   group:
-    name: sudo
+    name: '{{ sudo_group }}'
     state: present
   become: true
 
-- name: Set 'sudo' group to allow members to run as root (with password prompt)
+- name: "Allow '{{ sudo_group }}' group members to use 'sudo' (with password prompt)"
   lineinfile:
-    regexp: '^%sudo '
-    line: '%sudo ALL=(ALL) ALL'
+    regexp: '^%{{ sudo_group }} '
+    line: '%{{ sudo_group }} ALL=(ALL) ALL'
     path: /etc/sudoers.d/sudo
     validate: '/usr/sbin/visudo -cf %s'
     create: true
