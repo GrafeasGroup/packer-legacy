@@ -26,6 +26,9 @@ galaxy_info:
       versions:
         - 7
         - 8
+    - name: Debian
+      versions:
+        - 10
 
   galaxy_tags:
     - python

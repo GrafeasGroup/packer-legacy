@@ -1,11 +1,10 @@
 ---
 dependencies:
+  - make
   - gcc
   - openssl-devel
   - bzip2-devel
   - libffi-devel
-
-extensions:
   - readline-devel
   - sqlite-devel
   - gdbm-devel

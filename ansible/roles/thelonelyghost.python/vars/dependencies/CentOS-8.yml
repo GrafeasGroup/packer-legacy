@@ -13,7 +13,4 @@ dependencies:
   - zlib-devel
   - libuuid-devel
   - libffi-devel
-
-extensions: []
-
 # vim: ft=yaml.ansible

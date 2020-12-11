@@ -1,0 +1,14 @@
+---
+- name: Create and destroy a venv
+  shell: |
+    {{ python_bin }} -m venv /tmp/test-venv
+    . /tmp/test-venv
+    if command -v pip | grep -e '/tmp/test-venv/.*'; then
+      exit 1
+    fi
+
+    pip --version
+
+    deactivate
+    rm -rf /tmp/test-venv
+  changed_when: false

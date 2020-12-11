@@ -10,9 +10,12 @@ lint: |
   ansible-lint
   flake8
 platforms:
-  - name: instance
-    image: docker.io/pycontribs/centos:8
-    pre_build_image: true
+  - name: centos-8
+    image: centos:8
+  - name: centos-7
+    image: centos:7
+  - name: debian
+    image: debian:10
 provisioner:
   name: ansible
 verifier:

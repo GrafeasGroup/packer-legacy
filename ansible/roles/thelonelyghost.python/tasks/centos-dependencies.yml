@@ -1,0 +1,18 @@
+---
+- name: 'Install dnf packages'
+  dnf:
+    name: '{{ python_system.dependencies }}'
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'dnf'
+  become: true
+
+- name: 'Install yum packages'
+  yum:
+    name: '{{ python_system.dependencies }}'
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'yum'
+  become: true
+
+# vim: ft=yaml.ansible

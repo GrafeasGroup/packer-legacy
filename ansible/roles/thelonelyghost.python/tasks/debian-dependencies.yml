@@ -1,0 +1,12 @@
+---
+- name: 'Install apt packages'
+  apt:
+    name: '{{ python_system.dependencies }}'
+    state: present
+    autoclean: true
+    autoremove: true
+    update_cache: true
+  when: ansible_pkg_mgr == 'apt'
+  become: true
+
+# vim: ft=yaml.ansible

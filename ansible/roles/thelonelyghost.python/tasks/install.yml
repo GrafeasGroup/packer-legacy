@@ -5,6 +5,9 @@
     name: python_system
     file: './dependencies/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml'
 
+- name: Install system dependencies
+  include_tasks: '{{ ansible_distribution | lower }}-dependencies.yml'
+
 - name: Temp build directory
   file:
     state: directory
@@ -22,12 +25,6 @@
     remote_src: true
     src: '{{ python_download_url }}'
   when: not prior_art.stat.exists
-
-- name: Install system dependencies
-  package:
-    name: '{{ python_system.dependencies + python_system.extensions }}'
-    state: present
-  become: true
 
 - name: Configure installer
   command:
