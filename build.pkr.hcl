@@ -20,4 +20,12 @@ build {
     collections_path    = "${path.root}/ansible/collections"
     inventory_directory = "${path.root}/ansible"
   }
+
+  provisioner "shell" {
+    scripts = [
+      # This allows us to remove unique identifiers from
+      # the template and minimize image size at the end.
+      "${path.root}/cleanup.sh",
+    ]
+  }
 }
