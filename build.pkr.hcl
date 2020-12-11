@@ -4,7 +4,7 @@ build {
   provisioner "ansible" {
     # Wrap commands in a venv, install it during the run,
     # and set relevant environment variables
-    command            = "${path.root}/scripts/call-ansible.sh"
+    command            = "${path.root}/scripts/call-ansible-playbook.sh"
     galaxy_command     = "${path.root}/scripts/call-ansible-galaxy.sh"
     skip_version_check = true
 
