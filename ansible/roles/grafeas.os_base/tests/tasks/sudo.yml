@@ -1,25 +1,57 @@
 ---
 - stat:
+    path: /etc/sudoers.d/bot
+  register: bot_sudoer
+
+- stat:
     path: /etc/sudoers.d/sudo
   register: sudoers
 
 - name: Sudoers file exists
   assert:
     quiet: true
-    that: sudoers.stat.exists
+    that:
+      - sudoers.stat.exists
+      - bot_sudoer.stat.exists
 
 - shell: cat /etc/sudoers.d/sudo
   register: sudoers_content
   changed_when: false
+  when: sudoers.stat.exists
 
-- name: 'Sudoers file configures a group called `sudo`'
+- shell: cat /etc/sudoers.d/bot
+  register: bot_sudoer_content
+  changed_when: false
+  when: bot_sudoer.stat.exists
+
+- name: "Sudoers file configures 'sudo' group for password-protected sudo"
   assert:
     quiet: true
-    that: "sudoers.stat.exists and '%sudo ' in sudoers_content.stdout"
+    that:
+      - sudoers.stat.exists
+      - "'%sudo ' in sudoers_content.stdout"
+  when: ansible_os_family == 'Debian'
+- name: "Sudoers file configures 'wheel' group for password-protected sudo"
+  assert:
+    quiet: true
+    that:
+      - sudoers.stat.exists
+      - "'%wheel ' in sudoers_content.stdout"
+  when: ansible_os_family == 'RedHat'
 
 - name: 'Sudoers file does requires password for sudo'
   assert:
     quiet: true
-    that: "sudoers.stat.exists and ('NOPASSWD: ' not in sudoers_content.stdout)"
+    that:
+      - sudoers.stat.exists
+      - "('NOPASSWD: ' not in sudoers_content.stdout)"
+
+- name: 'Sudoers file allows bot user to have passwordless sudo'
+  assert:
+    quiet: true
+    that:
+      - bot_sudoer.stat.exists
+      - "(bot_username ~ ' ') in bot_sudoer_content.stdout"
+      - "'NOPASSWD: ' in bot_sudoer_content.stdout"
 
 # vim: ft=yaml.ansible

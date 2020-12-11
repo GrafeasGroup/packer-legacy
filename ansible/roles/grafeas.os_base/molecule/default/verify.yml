@@ -3,8 +3,8 @@
 
 - name: Verify
   hosts: all
-  gather_facts: false
   tasks:
     - import_tasks: ../../tests/tasks/main.yml
   vars:
     python_bin: /usr/local/bin/python3.9
+    bot_username: 'my_bot_user'

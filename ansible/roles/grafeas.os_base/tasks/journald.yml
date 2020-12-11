@@ -7,4 +7,10 @@
   become: true
   notify: restart journald
 
+- name: 'Enable journald on boot'
+  systemd:
+    name: 'systemd-journald.service'
+    enabled: true
+    daemon_reload: true
+
 # vim: ft=yaml.ansible
