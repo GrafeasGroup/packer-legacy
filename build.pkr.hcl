@@ -1,5 +1,8 @@
 build {
-  sources = ["linode.main"]
+  sources = [
+    "linode.main",
+    "docker.main",
+  ]
 
   provisioner "ansible" {
     # Wrap commands in a venv, install it during the run,
@@ -27,5 +30,14 @@ build {
       # the template and minimize image size at the end.
       "${path.root}/cleanup.sh",
     ]
+
+    except = ["docker.main"]
+  }
+
+  post-processor "docker-import" {
+    repository = "quay.io/thelonelyghost/grafeas-molecule-legacy"
+    tag        = "latest"
+
+    only = ["docker.main"]
   }
 }
