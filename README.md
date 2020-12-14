@@ -8,11 +8,11 @@
 
 Environment variables set:
 
-| Var                      | Description                                               |
-|:------------------------:|:----------------------------------------------------------|
-| `PKR_VAR_linode_api_key` | The API key mentioned in the 'Requirements' section above |
-| `PKR_VAR_ssh_username`   | The automation-only account's username (secret)           |
-| `PKR_VAR_ssh_port`       | The non-default SSH port to assign                        |
+| Var                      | Default              | Description                                               |
+|:------------------------:|:--------------------:|:----------------------------------------------------------|
+| `PKR_VAR_linode_api_key` | _N/a_                | The API key mentioned in the 'Requirements' section above |
+| `PKR_VAR_ssh_username`   | `my-automation-user` | The automation-only account's username (secret)           |
+| `PKR_VAR_ssh_port`       | `8022`               | The non-default SSH port to assign                        |
 
 ## Usage
 
@@ -29,7 +29,7 @@ It will also create a local copy of a container used for testing ansible intende
 
 ```shell
 ~/workspace/packer-legacy $ packer validate .
-~/workspace/packer-legacy $ packer build .
+~/workspace/packer-legacy $ packer build -only=docker.main .
 ~/workspace/packer-legacy $ docker push quay.io/thelonelyghost/grafeas-molecule-legacy:latest  # ... or whatever you named it
 ```
 
