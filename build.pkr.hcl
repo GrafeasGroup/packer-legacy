@@ -4,6 +4,17 @@ build {
     "docker.main",
   ]
 
+  provisioner "shell" {
+    inline = [
+      # This allows us to remove unique identifiers from
+      # the template and minimize image size at the end.
+      "apt-get update",
+      "apt-get install -y python3",
+    ]
+
+    only = ["docker.main"]
+  }
+
   provisioner "ansible" {
     # Wrap commands in a venv, install it during the run,
     # and set relevant environment variables
@@ -32,6 +43,13 @@ build {
     ]
 
     except = ["docker.main"]
+  }
+  provisioner "shell" {
+    inline = [
+      "rm -rf /var/lib/apt/lists/*",
+    ]
+
+    only = ["docker.main"]
   }
 
   post-processor "docker-import" {
