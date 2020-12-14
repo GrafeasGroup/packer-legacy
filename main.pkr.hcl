@@ -19,6 +19,9 @@ source "linode" "main" {
 # This is for later molecule tests in the Ansible
 # workspace for deploying things
 source "docker" "main" {
-  image       = "docker.io/library/debian:10"
-  export_path = "./grafeas-molecule-legacy.tar"
+  image = "docker.io/library/debian:10"
+
+  # NOTE: This will be removed after successfully running
+  #       the `docker-import` post-processor.
+  export_path = "${path.root}/grafeas-molecule-legacy.tar"
 }
