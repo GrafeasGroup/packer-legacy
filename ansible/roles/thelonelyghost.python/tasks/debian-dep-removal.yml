@@ -1,0 +1,11 @@
+---
+- name: 'Remove unneeded apt packages'
+  apt:
+    name: '{{ python_system.removable_dependencies }}'
+    state: absent
+    autoclean: true
+    autoremove: true
+  when: ansible_pkg_mgr == 'apt'
+  become: true
+
+# vim: ft=yaml.ansible

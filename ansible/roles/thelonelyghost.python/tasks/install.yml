@@ -44,6 +44,10 @@
     chdir: /tmp/python-build-dir/Python-{{ python_version }}
   become: true
 
+- name: Remove build system dependencies
+  include_tasks: '{{ ansible_distribution | lower }}-dep-removal.yml'
+
+
 - name: Cleanup temp dir
   file:
     state: absent

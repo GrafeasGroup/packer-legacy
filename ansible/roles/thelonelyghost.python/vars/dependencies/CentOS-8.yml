@@ -1,7 +1,7 @@
 ---
 dependencies:
-  - gcc
   - make
+  - gcc
   - glibc-devel
   - bzip2-devel
   - expat-devel
@@ -13,4 +13,8 @@ dependencies:
   - zlib-devel
   - libuuid-devel
   - libffi-devel
+
+removable_dependencies:
+  - make
+  - gcc
 # vim: ft=yaml.ansible

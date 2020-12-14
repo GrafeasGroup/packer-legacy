@@ -11,4 +11,7 @@ dependencies:
   - libffi-dev
   - curl
   - libbz2-dev
+
+removable_dependencies:
+  - build-essential
 # vim: ft=yaml.ansible
