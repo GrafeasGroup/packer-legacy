@@ -4,15 +4,31 @@ variable "linode_api_key" {
   sensitive   = true
 }
 
+variable "docker_image_name" {
+  type        = string
+  description = "Name of the docker image (including hostname if not docker hub)"
+  default     = "quay.io/thelonelyghost/grafeas-molecule-legacy"
+  sensitive   = false
+}
+
+variable "docker_image_tag" {
+  type        = string
+  description = "Tag to apply to the docker image"
+  default     = "latest"
+  sensitive   = false
+}
+
 variable "ssh_port" {
   type        = number
   description = "Non-default port on which to operate the SSH daemon."
+  default     = 8022 # Not a real user, but this makes it easier for a docker-only build
   sensitive   = true
 }
 
 variable "ssh_username" {
   type        = string
   description = "Username of a bot user, allowing an access point for later automation to manage this machine."
+  default     = "my-automation-user" # Not a real user, but this makes it easier for a docker-only build
   sensitive   = true
 }
 

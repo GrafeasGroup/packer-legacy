@@ -35,8 +35,8 @@ build {
   }
 
   post-processor "docker-import" {
-    repository = "quay.io/thelonelyghost/grafeas-molecule-legacy"
-    tag        = "latest"
+    repository = var.docker_image_name
+    tag        = var.docker_image_tag
 
     only = ["docker.main"]
   }
