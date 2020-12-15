@@ -25,12 +25,18 @@ This will generate a new image with the same name (but different id) as any exis
 
 At time of writing, Linode allows for a max of 2 images stored for free. Each image can get no larger than 4GB.
 
-It will also create a local copy of a container used for testing ansible intended for use once this image is in-use in the wild. To build that on your own, you'll need to run `docker login` as configured by your container hosting provider and run the following:
+## Testing
+
+The prescribed usage above will also create a local copy of a container used for testing [Ansible]. It is intended for use once this VM image is in-use in the wild.
+
+To build that on your own docker image using the same scripts, you'll need to run `docker login` as configured by your container hosting provider and run the following:
 
 ```shell
+~/workspace/packer-legacy $ image="quay.io/<your-username>/<your-repo>:latest" # or whatever you named it
 ~/workspace/packer-legacy $ packer validate .
 ~/workspace/packer-legacy $ packer build -only=docker.main .
-~/workspace/packer-legacy $ docker push quay.io/thelonelyghost/grafeas-molecule-legacy:latest  # ... or whatever you named it
+~/workspace/packer-legacy $ docker push "$image"
 ```
 
 [Packer]: https://www.packer.io/
+[Ansible]: https://docs.ansible.com/
