@@ -14,11 +14,11 @@ set +e
 . "${BASE_DIR}/venv/bin/activate"
 set -e
 
-# python3 -m pip install --upgrade pip
-python3 -m pip install pip-tools
+python3 -m pip install --upgrade pip
+python3 -m pip install pip-tools wheel
 hash -r
 pip-sync "${BASE_DIR}/requirements.txt"
-# python3 -m pip install -r "${BASE_DIR}/ansible/requirements.txt"
+# python3 -m pip install -r "${BASE_DIR}/requirements.txt"
 hash -r
 
 export ANSIBLE_FORCE_COLOR=1
