@@ -16,4 +16,4 @@ crash.log
 
 ansible/packer-provisioner-ansible*
 files/
-/venv/
+/secrets.hcl

@@ -17,7 +17,7 @@ set -e
 # python3 -m pip install --upgrade pip
 python3 -m pip install pip-tools
 hash -r
-pip-sync "${BASE_DIR}/ansible/requirements.txt"
+pip-sync "${BASE_DIR}/requirements.txt"
 # python3 -m pip install -r "${BASE_DIR}/ansible/requirements.txt"
 hash -r
 
