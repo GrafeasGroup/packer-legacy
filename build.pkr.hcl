@@ -23,7 +23,11 @@ build {
     skip_version_check = true
 
     # Because CentOS:
-    sftp_command = "/usr/libexec/openssh/sftp-server -e"
+    # sftp_command = "/usr/libexec/openssh/sftp-server -e"
+
+    extra_arguments = [
+      "--extra-vars", "bot_username=${var.ssh_username} ssh_port=${var.ssh_port}",
+    ]
 
     groups = ["packer"]
 
