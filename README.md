@@ -7,6 +7,7 @@ HashiCorp [Packer] is a tool for building (primarily) VM templates, for use with
 - Install [Packer] 1.6.0
 - Install Python 3.6 or higher
 - Linode API token generated
+- (optional) Make (default on Linux or MacOS should be fine)
 
 Set these environment variables to your chosen values, if you need to override the defaults:
 
@@ -30,6 +31,10 @@ For the real values of these, see [our private wiki entry][wiki-packer]
 ```shell
 ~/workspace/packer-legacy $ packer validate .
 ~/workspace/packer-legacy $ packer build -only=linode.main -var-file=./secrets.hcl .
+
+# Or...
+
+~/workspace/packer-legacy $ make test linode
 ```
 
 This will generate a new image with the same name (but different id) as any existing `private/` image in the Linode account. It is recommended to clear out images that are not being used by Terraform currently, or on-deck to be used next.
@@ -45,13 +50,16 @@ To build that container image on your local workstation, you'll need [Docker] in
 ```shell
 ~/workspace/packer-legacy $ packer validate .
 ~/workspace/packer-legacy $ packer build -only=docker.main .
-```
 
-To publish the built-version of the container image, run `docker login` (as dictating by your container hosting provider) and run the following:
+# Or...
 
-```shell
-~/workspace/packer-legacy $ image="quay.io/<your-username>/<your-repo>:latest" # or whatever you named it
-~/workspace/packer-legacy $ docker push "$image"
+~/workspace/packer-legacy $ export IMAGE_NAME='quay.io/thelonelyghost/grafeas-molecule-legacy'
+~/workspace/packer-legacy $ make test docker IMAGE_NAME='quay.io/thelonelyghost/grafeas-molecule-legacy'
+
+# Then publish it
+
+~/workspace/packer-legacy $ docker login "${IMAGE_NAME/\/*/}"  # as dictated by your hosting provider
+~/workspace/packer-legacy $ docker push "$IMAGE_NAME"
 ```
 
 [Packer]: https://www.packer.io/
