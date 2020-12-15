@@ -2,27 +2,46 @@
 set -euo pipefail
 
 # Remove traces of MAC address and UUID from network configuration
-sed -E -i '/^(HWADDR|UUID)/d' /etc/sysconfig/network-scripts/ifcfg-e*
-
-# Disable udev network rules
-ln -s /dev/null /etc/udev/rules.d/80-net-name-slot.rules
+if [ -e /etc/sysconfig/network-scripts ]; then
+  find /etc/sysconfig/network-scripts -maxdepth 1 -mindepth 1 -type f -name 'ifcfg-e*' -print0 | xargs -0 -I{} sed -E -i '/^(HWADDR|UUID)/d' '{}'
+fi
 
 # Disable root login through ssh with a key
-sed -i 's/nullok//g' /etc/pam.d/system-auth /etc/pam.d/password-auth-ac /etc/pam.d/password-auth /etc/pam.d/system-auth-ac
+pam_files=(
+  /etc/pam.d/system-auth
+  /etc/pam.d/password-auth-ac
+  /etc/pam.d/password-auth
+  /etc/pam.d/system-auth-ac
+)
+for file in "${pam_files[@]}"; do
+  if [ -e "$file" ]; then
+    sed -i 's/nullok//g' "$file"
+  fi
+done
 
 # Lock root account
 passwd -d root
 passwd -l root
 
 # Remove ssh host keys
-rm -rf /etc/ssh/ssh_host*_key*
+find /etc/ssh -maxdepth 1 -mindepth 1 -type f -name 'ssh_host*_key*' -delete
 
 # Clean up /root
-rm -f /root/anaconda-ks.cfg
-rm -f /root/install.log
-rm -f /root/install.log.syslog
-rm -rf /root/.pki
-rm -rf /root/.cache/*
+# shellcheck disable=SC2207
+root_user_logs=(
+  /root/anaconda-ks.cfg
+  /root/install.log
+  /root/install.log.syslog
+  /root/.pki
+
+  $(find /root/.cache -maxdepth 1 -mindepth 1 -name '*')
+)
+
+for item in "${root_user_logs[@]}"; do
+  if [ -e "$item" ]; then
+    rm -rf "$item"
+  fi
+done
 
 # Zero out the free space to save space in the final image
 dd if=/dev/zero of=/EMPTY bs=1M
