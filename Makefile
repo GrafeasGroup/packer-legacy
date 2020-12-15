@@ -2,6 +2,7 @@
 
 IMAGE_NAME:=quay.io/thelonelyghost/grafeas-molecule-legacy
 SSH_AUTH_SOCK=
+PACKER_TMP_DIR=/tmp
 
 all: linode docker
 
