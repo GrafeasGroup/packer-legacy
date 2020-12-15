@@ -41,19 +41,17 @@ build {
 
   provisioner "shell" {
     scripts = [
-      # This allows us to remove unique identifiers from
-      # the template and minimize image size at the end.
       "${path.root}/scripts/cleanup.sh",
     ]
-
-    except = ["docker.main"]
   }
   provisioner "shell" {
     scripts = [
-      "${path.root}/scripts/docker-cleanup.sh",
+      # This allows us to remove unique identifiers from
+      # the template and minimize image size at the end.
+      "${path.root}/scripts/vm-cleanup.sh",
     ]
 
-    only = ["docker.main"]
+    except = ["docker.main"]
   }
 
   post-processor "docker-tag" {
