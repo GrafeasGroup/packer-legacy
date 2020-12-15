@@ -62,6 +62,8 @@ To build that container image on your local workstation, you'll need [Docker] in
 ~/workspace/packer-legacy $ docker push "$IMAGE_NAME"
 ```
 
+Generally speaking if it executes correctly using Ansible on the Docker provisioner, it can be assumed it will also execute correctly for the Linode provisioner. There are some caveats with what a container cannot do that is basic capability of a VM, but those are odd edge cases that will be handled as they arise.
+
 [Packer]: https://www.packer.io/
 [Docker]: https://www.docker.com/
 [Ansible]: https://docs.ansible.com/
