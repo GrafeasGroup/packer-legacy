@@ -20,5 +20,8 @@ source "linode" "main" {
 # workspace for deploying things
 source "docker" "main" {
   image  = "docker.io/library/debian:10"
+  tmpfs  = [
+    "/run",
+  ]
   commit = true
 }

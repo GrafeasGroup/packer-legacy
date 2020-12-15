@@ -39,15 +39,14 @@ build {
     scripts = [
       # This allows us to remove unique identifiers from
       # the template and minimize image size at the end.
-      "${path.root}/cleanup.sh",
+      "${path.root}/scripts/cleanup.sh",
     ]
 
     except = ["docker.main"]
   }
   provisioner "shell" {
-    inline = [
-      "rm -rf /var/lib/apt/lists/*",
-      "rm -rf /tmp/*",
+    scripts = [
+      "${path.root}/scripts/docker-cleanup.sh",
     ]
 
     only = ["docker.main"]
