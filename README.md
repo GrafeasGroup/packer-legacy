@@ -64,6 +64,12 @@ To build that container image on your local workstation, you'll need [Docker] in
 
 Generally speaking if it executes correctly using Ansible on the Docker provisioner, it can be assumed it will also execute correctly for the Linode provisioner. There are some caveats with what a container cannot do that is basic capability of a VM, but those are odd edge cases that will be handled as they arise.
 
+## CI/CD
+
+Note that there is no continuous integration for this repository. This is in large part due to Linode's inability to update a VM template. Instead, it uploads a new one and names it the same as the old one (but contains a different, referenced id: `private/12345` vs. `private/39194`).
+
+Until this is resolved, building can only be done for the container agent. This is further hindered by the execution time of compiling Python every single time it is run. Rather than run out of usage minutes for our given CI solution, we'd rather just keep this for executing only on local workstations.
+
 [Packer]: https://www.packer.io/
 [Docker]: https://www.docker.com/
 [Ansible]: https://docs.ansible.com/
