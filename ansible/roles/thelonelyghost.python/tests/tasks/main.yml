@@ -13,5 +13,22 @@
     quiet: true
     that: py_path.stat.exists and py_path.stat.executable
 
+- name: Find build tools
+  shell: |
+    command -v make || echo 'make not found'
+    command -v gcc || echo 'gcc not found'
+    command -v patch || echo 'patch not found'
+  register: build_tools
+  changed_when: false
+  ignore_errors: true
+
+- name: 'Build tools are not present'
+  assert:
+    quiet: true
+    that:
+      - build_tools.stdout_lines[0] == 'make not found'
+      - build_tools.stdout_lines[1] == 'gcc not found'
+      - build_tools.stdout_lines[2] == 'patch not found'
+
 - import_tasks: ./version.yml
 - import_tasks: ./venv.yml
