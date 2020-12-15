@@ -5,6 +5,14 @@ build {
   ]
 
   provisioner "shell" {
+    scripts = [
+      "${path.root}/scripts/setup-swap.sh",
+    ]
+
+    only = ["linode.main"]
+  }
+
+  provisioner "shell" {
     inline = [
       # This allows us to remove unique identifiers from
       # the template and minimize image size at the end.
@@ -37,6 +45,14 @@ build {
     roles_path          = "${path.root}/ansible/roles"
     collections_path    = "${path.root}/ansible/collections"
     inventory_directory = "${path.root}/ansible"
+  }
+
+  provisioner "shell" {
+    scripts = [
+      "${path.root}/scripts/teardown-swap.sh",
+    ]
+
+    only = ["linode.main"]
   }
 
   provisioner "shell" {
