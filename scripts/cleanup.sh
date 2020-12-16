@@ -30,8 +30,25 @@ for log in "${logs[@]}"; do
 done
 
 for directory in /root /home; do
-  find "$directory" -type f -name '.python_history' -delete
-  find "$directory" -type d -name '.cache' -print0 | xargs -0 -I{} rm -rf {}
+  find "$directory" -maxdepth 1 -mindepth 1 -type f -name '.python_history' -delete
+  find "$directory" -maxdepth 1 -mindepth 1 -type d -name '.cache' -print0 | xargs -0 -I{} rm -rf {}
+  find "$directory" -maxdepth 1 -mindepth 1 -type d -name '.pki' -print0 | xargs -0 -I{} rm -rf {}
+  if [ -e "${directory}/.ssh/known_hosts" ]; then
+    rm -rf "${directory}/.ssh/known_hosts"
+  fi
+done
+
+# Clean up /root
+root_user_logs=(
+  /root/anaconda-ks.cfg
+  /root/install.log
+  /root/install.log.syslog
+)
+
+for item in "${root_user_logs[@]}"; do
+  if [ -e "$item" ]; then
+    rm -rf "$item"
+  fi
 done
 
 # Find and remove any artifacts from packer ssh proxy

@@ -26,25 +26,8 @@ passwd -l root
 # Remove ssh host keys
 find /etc/ssh -maxdepth 1 -mindepth 1 -type f -name 'ssh_host*_key*' -delete
 
-# Clean up /root
-# shellcheck disable=SC2207
-root_user_logs=(
-  /root/anaconda-ks.cfg
-  /root/install.log
-  /root/install.log.syslog
-  /root/.pki
-
-  $(find /root/.cache -maxdepth 1 -mindepth 1 -name '*')
-)
-
-for item in "${root_user_logs[@]}"; do
-  if [ -e "$item" ]; then
-    rm -rf "$item"
-  fi
-done
-
 # Zero out the free space to save space in the final image
-dd if=/dev/zero of=/EMPTY bs=1M
+dd if=/dev/zero of=/EMPTY bs=1M || true
 rm -f /EMPTY
 
 # Clear history
