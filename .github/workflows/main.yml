@@ -44,7 +44,7 @@ jobs:
         run: |
           printf '>>>  %s\n' "You shouldn't have gotten this far" 1>&2; exit 1
           packer build -only=linode.main .
-        if: github.ref == "no way in hell"
+        if: ${{ false }}
 
   build-docker:
     runs-on: ubuntu-latest
@@ -65,13 +65,13 @@ jobs:
           registry: ghcr.io
           username: svc-grafeas
           password: ${{ secrets.GRAFEAS_GH_PAT }}
-        if: github.ref == "refs/heads/main"
+        if: ${{ github.ref == 'refs/heads/main' }}
       - name: Packer build (Docker)
         run: |
           packer build -var "docker_image_name=$IMAGE_NAME" -var "docker_image_tag=$IMAGE_TAG" -only=docker.main .
       - name: Publish container image
         run: |
           docker push "$IMAGE_NAME":"$IMAGE_TAG"
-          if: github.ref == "refs/heads/main"
+          if: ${{ github.ref == 'refs/heads/main' }}
 
 # vim: ft=yaml
