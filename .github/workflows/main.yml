@@ -35,7 +35,7 @@ jobs:
         run: |
           packer validate .
 
-  molecule:
+  molecule-lint:
     name: Ansible sanity checks
     if: ${{ github.ref != 'refs/heads/main' }}
 
@@ -54,24 +54,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: 'Python venv'
+        working-directory: ./ansible
         run: |
           python3 -m venv ./venv
           source ./venv/bin/activate
 
           pip install -r dev-requirements.txt
-        working-directory: ./ansible
       - name: 'Static analysis'
+        working-directory: ./ansible
         run: |
           source ./venv/bin/activate
 
           molecule lint
+
+  molecule-test:
+    name: Ansible sanity checks
+    if: ${{ github.ref != 'refs/heads/main' }}
+
+    runs-on: ubuntu-latest
+    needs:
+      - molecule-lint
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2.2.1
+        with:
+          python-version: '>= 3.8'
+          architecture: x64
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/dev-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: 'Python venv'
         working-directory: ./ansible
+        run: |
+          python3 -m venv ./venv
+          source ./venv/bin/activate
+
+          pip install -r dev-requirements.txt
       - name: 'Integration testing'
+        working-directory: ./ansible
         run: |
           source ./venv/bin/activate
 
           molecule test
-        working-directory: ./ansible
 
   build-linode:
     name: Linode image
