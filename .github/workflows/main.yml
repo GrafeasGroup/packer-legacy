@@ -47,6 +47,12 @@ jobs:
         with:
           python-version: '>= 3.8'
           architecture: x64
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/dev-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: 'Python venv'
         run: |
           python3 -m venv ./venv
@@ -87,6 +93,12 @@ jobs:
         with:
           python-version: '>= 3.8'
           architecture: x64
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Packer build (Linode)
         run: |
           printf '>>>  %s\n' "You shouldn't have gotten this far" 1>&2; exit 1
@@ -116,6 +128,12 @@ jobs:
           registry: ghcr.io
           username: svc-grafeas
           password: ${{ secrets.GRAFEAS_GH_PAT }}
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Packer build (Docker)
         run: |
           packer build -var "docker_image_name=$IMAGE_NAME" -var "docker_image_tag=$IMAGE_TAG" -only=docker.main .
