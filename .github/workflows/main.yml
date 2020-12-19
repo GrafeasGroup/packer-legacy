@@ -25,7 +25,9 @@ env:
 jobs:
   validate:
     name: Packer sanity checks
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp-contrib/setup-packer@v1.0.0
@@ -35,8 +37,10 @@ jobs:
 
   molecule:
     name: Ansible sanity checks
-    runs-on: ubuntu-latest
     if: ${{ github.ref != 'refs/heads/main' }}
+
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2.2.1
@@ -64,15 +68,18 @@ jobs:
 
   build-linode:
     name: Linode image
-    runs-on: ubuntu-latest
     # TODO: Solve the Linode image retention problem, then uncomment the following:
     # if: ${{ github.ref == 'refs/heads/main' }}
     if: ${{ 'false' }}
+
+    runs-on: ubuntu-latest
     needs:
       - validate
+
     env:
       PKR_VAR_ssh_username: ${{ secrets.GRAFEAS_REMOTE_USER }}
       PKR_VAR_ssh_port: ${{ secrets.GRAFEAS_SSH_PORT }}
+
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp-contrib/setup-packer@v1.0.0
@@ -87,12 +94,16 @@ jobs:
 
   build-docker:
     name: Docker image
+    if: ${{ github.ref == 'refs/heads/main' }}
+
     runs-on: ubuntu-latest
     needs:
       - validate
+
     env:
       IMAGE_NAME: ghcr.io/grafeasgroup/molecule-legacy
       IMAGE_TAG: latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp-contrib/setup-packer@v1.0.0
@@ -105,13 +116,11 @@ jobs:
           registry: ghcr.io
           username: svc-grafeas
           password: ${{ secrets.GRAFEAS_GH_PAT }}
-        if: ${{ github.ref == 'refs/heads/main' }}
       - name: Packer build (Docker)
         run: |
           packer build -var "docker_image_name=$IMAGE_NAME" -var "docker_image_tag=$IMAGE_TAG" -only=docker.main .
       - name: Publish container image
         run: |
           docker push "$IMAGE_NAME":"$IMAGE_TAG"
-        if: ${{ github.ref == 'refs/heads/main' }}
 
 # vim: ft=yaml
