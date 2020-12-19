@@ -1,5 +1,6 @@
 ---
 exclude_paths:
+  - 'venv/'
   - 'roles/thelonelyghost.python/tests/'
   - 'roles/grafeas.os_base/tests/'
 
