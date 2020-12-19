@@ -24,6 +24,7 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   validate:
+    name: Packer sanity checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -33,6 +34,7 @@ jobs:
           packer validate .
 
   build-linode:
+    name: Linode image
     runs-on: ubuntu-latest
     needs:
       - validate
@@ -53,6 +55,7 @@ jobs:
         if: ${{ false }}
 
   build-docker:
+    name: Docker image
     runs-on: ubuntu-latest
     needs:
       - validate
