@@ -11,7 +11,7 @@ lint: |
   flake8
 platforms:
   - name: centos-7
-    image: centos:7
+    image: docker.io/library/centos:7
     tmpfs:
       - /run
       - /tmp
@@ -21,7 +21,7 @@ platforms:
       - SYS_ADMIN
     command: /sbin/init
   - name: centos-8
-    image: centos:8
+    image: docker.io/library/centos:8
     tmpfs:
       - /run
       - /tmp
@@ -31,7 +31,7 @@ platforms:
       - SYS_ADMIN
     command: /usr/sbin/init
   - name: debian
-    image: debian:10
+    image: docker.io/library/debian:10
     tmpfs:
       - /run
       - /tmp

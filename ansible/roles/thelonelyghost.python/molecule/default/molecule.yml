@@ -11,11 +11,11 @@ lint: |
   flake8
 platforms:
   - name: centos-8
-    image: centos:8
+    image: docker.io/library/centos:8
   - name: centos-7
-    image: centos:7
+    image: docker.io/library/centos:7
   - name: debian
-    image: debian:10
+    image: docker.io/library/debian:10
 provisioner:
   name: ansible
 verifier:
