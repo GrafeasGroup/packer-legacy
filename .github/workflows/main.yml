@@ -36,6 +36,9 @@ jobs:
   build-linode:
     name: Linode image
     runs-on: ubuntu-latest
+    # TODO: Solve the Linode image retention problem, then uncomment the following:
+    # if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ 'false' }}
     needs:
       - validate
     env:
@@ -52,7 +55,6 @@ jobs:
         run: |
           printf '>>>  %s\n' "You shouldn't have gotten this far" 1>&2; exit 1
           packer build -only=linode.main .
-        if: ${{ false }}
 
   build-docker:
     name: Docker image
