@@ -33,6 +33,35 @@ jobs:
         run: |
           packer validate .
 
+  molecule:
+    name: Ansible sanity checks
+    runs-on: ubuntu-latest
+    if: ${{ github.ref != 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2.2.1
+        with:
+          python-version: '>= 3.8'
+          architecture: x64
+      - name: 'Python venv'
+        run: |
+          python3 -m venv ./venv
+          source ./venv/bin/activate
+
+          pip install -r dev-requirements.txt
+        working-directory: ./ansible
+      - name: 'Static analysis'
+        run: |
+          source ./venv/bin/activate
+
+          molecule lint
+      - name: 'Integration testing'
+        run: |
+          source ./venv/bin/activate
+
+          molecule test
+        working-directory: ./ansible
+
   build-linode:
     name: Linode image
     runs-on: ubuntu-latest
