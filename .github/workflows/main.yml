@@ -99,7 +99,7 @@ jobs:
         run: |
           source ./venv/bin/activate
 
-          molecule test
+          molecule --debug test
 
   build-linode:
     name: Linode image
