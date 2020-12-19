@@ -68,7 +68,7 @@ jobs:
           molecule lint
 
   molecule-test:
-    name: Ansible sanity checks
+    name: Ansible end-to-end tests
     if: ${{ github.ref != 'refs/heads/main' }}
 
     runs-on: ubuntu-latest
