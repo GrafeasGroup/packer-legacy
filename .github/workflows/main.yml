@@ -77,6 +77,8 @@ jobs:
       - molecule-lint
 
     steps:
+      - run: |
+          docker pull docker.io/library/debian:10
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2.2.1
         with:
