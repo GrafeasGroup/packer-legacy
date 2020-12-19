@@ -60,7 +60,7 @@ jobs:
     needs:
       - validate
     env:
-      IMAGE_NAME: ghcr.io/GrafeasGroup/molecule-legacy
+      IMAGE_NAME: ghcr.io/grafeasgroup/molecule-legacy
       IMAGE_TAG: latest
     steps:
       - uses: actions/checkout@v2
@@ -81,6 +81,6 @@ jobs:
       - name: Publish container image
         run: |
           docker push "$IMAGE_NAME":"$IMAGE_TAG"
-          if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
 
 # vim: ft=yaml
