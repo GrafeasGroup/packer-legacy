@@ -30,7 +30,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: hashicorp-contrib/setup-packer@v1.0.0
+      - name: Install Packer
+        uses: hashicorp-contrib/setup-packer@v1.0.0
       - name: Packer validate
         run: |
           packer validate .
@@ -73,8 +74,6 @@ jobs:
       - molecule-lint
 
     steps:
-      - run: |
-          docker pull docker.io/library/debian:10
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
@@ -113,7 +112,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: hashicorp-contrib/setup-packer@v1.0.0
+      - name: Install Packer
+        uses: hashicorp-contrib/setup-packer@v1.0.0
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
@@ -139,7 +139,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: hashicorp-contrib/setup-packer@v1.0.0
+      - name: Install Packer
+        uses: hashicorp-contrib/setup-packer@v1.0.0
       - uses: docker/login-action@v1.8.0
         with:
           registry: ghcr.io
