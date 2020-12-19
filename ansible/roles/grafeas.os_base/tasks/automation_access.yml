@@ -1,10 +1,10 @@
 ---
 
-- name: "Create '{{ bot_username}}' user account for automated access"
+- name: "Create '{{ bot_username }}' user account for automated access"
   user:
     name: '{{ bot_username | mandatory }}'
     comment: automation-only user
-    shell: /bin/false
+    shell: /bin/bash
   become: true
 
 - name: "Create '~/.ssh' directory for '{{ bot_username }}'"
