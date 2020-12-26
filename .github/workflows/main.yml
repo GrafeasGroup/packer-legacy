@@ -1,0 +1,165 @@
+---
+name: CI
+
+# yamllint disable-line rule:truthy
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PKR_VAR_linode_api_key: ${{ secrets.LINODE_API_KEY }}
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  validate:
+    name: Packer sanity checks
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Packer
+        uses: hashicorp-contrib/setup-packer@v1.0.0
+      - name: Packer validate
+        run: |
+          packer validate .
+
+  molecule-lint:
+    name: Ansible sanity checks
+    if: ${{ github.ref != 'refs/heads/main' }}
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/dev-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: 'Python venv'
+        working-directory: ./ansible
+        run: |
+          python3 -m venv ./venv
+          source ./venv/bin/activate
+          pip install wheel
+
+          pip install -r dev-requirements.txt
+      - name: 'Static analysis'
+        working-directory: ./ansible
+        run: |
+          source ./venv/bin/activate
+
+          molecule lint
+
+  molecule-test:
+    name: Ansible end-to-end tests
+    # TODO: Solve the systemd in docker problem without requiring a privileged
+    # container, then uncomment the following:
+    # if: ${{ github.ref != 'refs/heads/main' }}
+    if: ${{ 'false' }}
+
+    runs-on: ubuntu-20.04
+    needs:
+      - molecule-lint
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/dev-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: 'Python venv'
+        working-directory: ./ansible
+        run: |
+          python3 -m venv ./venv
+          source ./venv/bin/activate
+          pip install wheel
+
+          pip install -r dev-requirements.txt
+      - name: 'Integration testing'
+        working-directory: ./ansible
+        run: |
+          source ./venv/bin/activate
+
+          molecule --debug test
+
+  build-linode:
+    name: Linode image
+    # TODO: Solve the Linode image retention problem, then uncomment the following:
+    # if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ 'false' }}
+
+    runs-on: ubuntu-20.04
+    needs:
+      - validate
+
+    env:
+      PKR_VAR_ssh_username: ${{ secrets.GRAFEAS_REMOTE_USER }}
+      PKR_VAR_ssh_port: ${{ secrets.GRAFEAS_SSH_PORT }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Packer
+        uses: hashicorp-contrib/setup-packer@v1.0.0
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Packer build (Linode)
+        run: |
+          printf '>>>  %s\n' "You shouldn't have gotten this far" 1>&2; exit 1
+          packer build -only=linode.main .
+
+  build-docker:
+    name: Docker image
+    if: ${{ github.ref == 'refs/heads/main' }}
+
+    runs-on: ubuntu-20.04
+    needs:
+      - validate
+
+    env:
+      IMAGE_NAME: ghcr.io/grafeasgroup/molecule-legacy
+      IMAGE_TAG: latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Packer
+        uses: hashicorp-contrib/setup-packer@v1.0.0
+      - uses: docker/login-action@v1.8.0
+        with:
+          registry: ghcr.io
+          username: svc-grafeas
+          password: ${{ secrets.GRAFEAS_GH_PAT }}
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Packer build (Docker)
+        run: |
+          packer build -var "docker_image_name=$IMAGE_NAME" -var "docker_image_tag=$IMAGE_TAG" -only=docker.main .
+      - name: Publish container image
+        run: |
+          docker push "$IMAGE_NAME":"$IMAGE_TAG"
+
+# vim: ft=yaml

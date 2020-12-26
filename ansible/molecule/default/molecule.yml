@@ -11,14 +11,12 @@ lint: |
   flake8
 platforms:
   - name: instance
-    image: debian:10
+    image: docker.io/library/debian:10
     tmpfs:
       - /run
       - /tmp
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - SYS_ADMIN
     command: /lib/systemd/systemd
     groups:
       - packer
