@@ -67,7 +67,10 @@ jobs:
 
   molecule-test:
     name: Ansible end-to-end tests
-    if: ${{ github.ref != 'refs/heads/main' }}
+    # TODO: Solve the systemd in docker problem without requiring a privileged
+    # container, then uncomment the following:
+    # if: ${{ github.ref != 'refs/heads/main' }}
+    if: ${{ 'false' }}
 
     runs-on: ubuntu-20.04
     needs:
