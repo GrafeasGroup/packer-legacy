@@ -22,6 +22,7 @@
     state: present
     key: '{{ bot_public_key }}'
     comment: 'automation-account-access'
+  become: true
 
 - name: Allow bot account to run as root (without password prompt)
   lineinfile:

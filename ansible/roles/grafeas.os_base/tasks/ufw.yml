@@ -8,6 +8,7 @@
 - name: 'Set UFW logging'
   community.general.ufw:
     logging: 'on'
+  become: true
 
 - name: 'Limit burst SSH auth attempts'
   community.general.ufw:
@@ -15,6 +16,7 @@
     rule: limit
     name: ssh
     log: true
+  become: true
 
 - name: 'Enable UFW'
   community.general.ufw:
@@ -23,3 +25,4 @@
   # Skip in molecule testing, since containers +
   # kernel modules (iptables) = big problem
   when: not lookup('env', 'MOLECULE_FILE')
+  become: true

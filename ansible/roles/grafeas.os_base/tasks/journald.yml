@@ -12,5 +12,6 @@
     name: 'systemd-journald.service'
     enabled: true
     daemon_reload: true
+  become: true
 
 # vim: ft=yaml.ansible

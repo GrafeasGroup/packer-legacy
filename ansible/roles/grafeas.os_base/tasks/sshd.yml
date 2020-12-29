@@ -9,6 +9,7 @@
     owner: root
     mode: '644'
   when: ssh_port != 22
+  become: true
 
 - name: Disallow remote root login
   lineinfile:
@@ -18,6 +19,7 @@
     group: root
     owner: root
     mode: '644'
+  become: true
 
 - name: Disallow password authentication over SSH
   lineinfile:
@@ -28,6 +30,7 @@
     owner: root
     mode: '644'
   notify: restart sshd
+  become: true
 
 - name: 'Permit port {{ ssh_port }} in SELinux configuration'
   community.general.seport:
@@ -36,5 +39,6 @@
     setype: ssh_port_t
     state: present
   when: ansible_selinux is defined and ansible_selinux_python_present
+  become: true
 
 # vim: ft=yaml.ansible
