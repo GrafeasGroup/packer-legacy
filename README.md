@@ -2,19 +2,39 @@
 
 HashiCorp [Packer] is a tool for building (primarily) VM templates, for use with on-prem or cloud providers, in a repeatable, scripted manner. For our purposes, it creates a base image where we can cache some rather expensive (time, CPU, etc.) operations so that scaling or disaster recovery occurs much faster. It's also one of the core components of an ephemeral infrastructure approach to things.
 
+We output 3 types of images here:
+
+- Linode (VM)
+- Docker (container)
+- Vagrant (VM)
+
+The Docker image and Vagrant box are intended entirely for testing purposes in downstream efforts.
+
+Docker provides a good approximation of a VM environment, with some caveats, and allows for a _vast_ increase in speed of iterating as compared to a VM. One known caveat is an incompatibility between Docker and systemd, even when [jumping][docker-systemd-1] [through][docker-systemd-2] [drastic][docker-systemd-3] [hoops][docker-systemd-4]. Any of the solutions found were required a lot of hackery-pokery or flat-out didn't work when tested.
+
+For these reasons, we also include the Vagrant box as an alternate option for testing. This allows us to more fully emulate how a system would work in Linode, but entirely on a local basis.
+
+[docker-systemd-1]: https://markandruth.co.uk/2020/10/10/running-systemd-inside-a-centos-8-docker-container
+[docker-systemd-2]: https://developers.redhat.com/blog/2014/05/05/running-systemd-within-docker-container/
+[docker-systemd-3]: https://developers.redhat.com/blog/2019/04/24/how-to-run-systemd-in-a-container/
+[docker-systemd-4]: https://lwn.net/Articles/676831/
+
 ## Requirements
 
 - Install [Packer] 1.6.0
 - Install Python 3.6 or higher
+- Install Make (default on Linux or MacOS should be fine)
 - Linode API token generated
-- (optional) Make (default on Linux or MacOS should be fine)
+- Install [Docker]
+- Install [Vagrant]
+- Install [VirtualBox] (with extension pack)
 
 Set these environment variables to your chosen values, if you need to override the defaults:
 
-| Var                         | Default                                          | Description                                               |
-|:---------------------------:|:------------------------------------------------:|:----------------------------------------------------------|
-| `PKR_VAR_docker_image_name` | `quay.io/thelonelyghost/grafeas-molecule-legacy` | Docker image name (and host) for the `docker.main` target |
-| `PKR_VAR_docker_image_tag`  | `latest`                                         | Docker image tag for the `docker.main` target             |
+| Var                 | Default                                          | Description                                                      |
+|:-------------------:|:------------------------------------------------:|:-----------------------------------------------------------------|
+| `IMAGE_NAME`        | `quay.io/thelonelyghost/grafeas-molecule-legacy` | Docker image name (and host) for the `docker.main` Packer target |
+| `VAGRANT_BOX_NAME`  | `grafeas/legacy`                                 | Vagrant box name for the `vagrant.main` Packer target            |
 
 ... and set these values in `secrets.hcl`:
 
@@ -28,49 +48,92 @@ For the real values of these, see [our private wiki entry][wiki-packer]
 
 ## Usage
 
+### Linode
+
 ```shell
-~/workspace/packer-legacy $ packer validate .
-~/workspace/packer-legacy $ packer build -only=linode.main -var-file=./secrets.hcl .
+# Validate it
 
-# Or...
+~/workspace/packer-legacy $ make test
 
-~/workspace/packer-legacy $ make test linode
+# Build / publish it
+
+~/workspace/packer-legacy $ make linode
 ```
 
 This will generate a new image with the same name (but different id) as any existing `private/` image in the Linode account. It is recommended to clear out images that are not being used by Terraform currently, or on-deck to be used next.
 
-At time of writing, Linode allows for a max of 2 images stored for free. Each image can get no larger than 4GB.
+At time of writing and keeping with our billing model, Linode allows for a max of 2 images stored with each image no larger than 4GB.
 
-## Testing
+## Test Images
 
-For testing purposes later down the line, we want to create a container image that's similar to the VM template we've just created. This is to help with testing [Ansible] that is intended for use once this VM image is in-use in the wild.
+For testing purposes later down the line, we may want to create a container image that's similar to the VM template we've just created. Since testing systemd doesn't work too well in containers, we also should create a local VM image for use with [Vagrant]. Due to cross-platform support and ease of access, the [VirtualBox] provider was chosen to work with Vagrant.
 
-To build that container image on your local workstation, you'll need [Docker] installed and access to the internet. The build process looks a little something like this:
+These base images (except Linode's) are to help with testing [Ansible] in downstream efforts, such as deploying applications to the servers, running a copy of the application in a production-like environment, etc.
+
+### Container-based Images
+
+To build the container image on your local workstation, you'll need [Docker] installed and access to the internet. The build process might look like this:
 
 ```shell
-~/workspace/packer-legacy $ packer validate .
-~/workspace/packer-legacy $ packer build -only=docker.main .
+# Validate it
 
-# Or...
+~/workspace/packer-legacy $ make test
+
+# Set your container image's name
 
 ~/workspace/packer-legacy $ export IMAGE_NAME='quay.io/thelonelyghost/grafeas-molecule-legacy'
-~/workspace/packer-legacy $ make test docker IMAGE_NAME='quay.io/thelonelyghost/grafeas-molecule-legacy'
+
+# Build it
+
+~/workspace/packer-legacy $ make docker
 
 # Then publish it
 
-~/workspace/packer-legacy $ docker login "${IMAGE_NAME/\/*/}"  # as dictated by your hosting provider
-~/workspace/packer-legacy $ docker push "$IMAGE_NAME"
+~/workspace/packer-legacy $ make docker-push
 ```
 
-Generally speaking if it executes correctly using Ansible on the Docker provisioner, it can be assumed it will also execute correctly for the Linode provisioner. There are some caveats with what a container cannot do that is basic capability of a VM, but those are odd edge cases that will be handled as they arise.
+Once it's tested and deemed in good working order, mark it as stable with `make docker-release`.
+
+Except for incompatibility with systemd functionality, (ab)using Docker to act like a VM is a pretty close approximation to a fully-fledged VM on Linode. But using Docker allows us to iterate a _lot_ faster than using an actual VM hypervisor.
+
+For everything else, we should use VirtualBox with Vagrant to have a full picture of how a VM will execute...
+
+### Local VM Images
+
+To build the image that can be imported into Vagrant later, you'll need [Vagrant] and [VirtualBox] installed and access to the internet. The build process might look like this:
+
+```shell
+# Validate it
+
+~/workspace/packer-legacy $ make test
+
+# Set your Vagrant box's name
+
+~/workspace/packer-legacy $ export VAGRANT_BOX_NAME='grafeas/legacy'
+
+# Build it
+
+~/workspace/packer-legacy $ make vagrant
+
+# Then publish it
+
+~/workspace/packer-legacy $ make vagrant-push
+```
+
+Once it's tested and deemed in good working order, mark it as stable with `make vagrant-release`.
 
 ## CI/CD
 
-Note that there is no continuous integration for this repository. This is in large part due to Linode's inability to update a VM template. Instead, it uploads a new one and names it the same as the old one (but contains a different, referenced id: `private/12345` vs. `private/39194`).
+Note that there is no continuous integration for this repository. This is due to a few reasons:
 
-Until this is resolved, building can only be done for the container agent. This is further hindered by the execution time of compiling Python every single time it is run. Rather than run out of usage minutes for our given CI solution, we'd rather just keep this for executing only on local workstations.
+1. Linode creates new images on each upload (e.g., `private/12345` vs. `private/67890`) instead of replacing an existing one, which conflicts with our billing model's mandate of 2 custom images at the maximum.
+2. VirtualBox is hard to scale and are very resource-intensive for a CI system, so few (if any) offer it out-of-box like they do Docker.
+
+Once these 2 issues are resolved, automatic builds and publishing can occur using a CI/CD system. Until then, builds should be done manually on local workstations in the manner outlined above.
 
 [Packer]: https://www.packer.io/
 [Docker]: https://www.docker.com/
+[Vagrant]: https://www.vagrantup.com/
+[VirtualBox]: https://www.virtualbox.org/
 [Ansible]: https://docs.ansible.com/
 [wiki-packer]: https://app.gitbook.com/@grafeas-group/s/dev/infra/packer
