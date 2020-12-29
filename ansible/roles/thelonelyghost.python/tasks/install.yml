@@ -44,6 +44,22 @@
     chdir: /tmp/python-build-dir/Python-{{ python_version }}
   become: true
 
+- name: Check on /usr/local/bin/python
+  stat:
+    path: /usr/local/bin/python
+  register: py_path
+
+- name: Backfill /usr/local/bin/python to be /usr/local/bin/python3
+  file:
+    path: /usr/local/bin/python
+    src: /usr/local/bin/python3
+    state: hard
+    owner: root
+    group: root
+    mode: '755'
+  become: true
+  when: not py_path.stat.exists
+
 - name: Remove build system dependencies
   include_tasks: '{{ ansible_distribution | lower }}-dep-removal.yml'
 
