@@ -2,25 +2,34 @@ build {
   sources = [
     "linode.main",
     "docker.main",
+    "vagrant.main",
   ]
+
+  provisioner "shell" {
+    inline = [
+      "apt-get update && apt-get install -y sudo",
+    ]
+
+    # This provider has non-root as the default login. By installing sudo,
+    # we are able to consistently call `sudo <whatever>` even if the
+    # executing user is `root`
+    except = ["vagrant.main"]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "apt-get install -y python3",
+    ]
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
+  }
 
   provisioner "shell" {
     scripts = [
       "${path.root}/scripts/setup-swap.sh",
     ]
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
 
-    only = ["linode.main"]
-  }
-
-  provisioner "shell" {
-    inline = [
-      # This allows us to remove unique identifiers from
-      # the template and minimize image size at the end.
-      "apt-get update",
-      "apt-get install -y python3 sudo",
-    ]
-
-    only = ["docker.main"]
+    except = ["docker.main"]
   }
 
   provisioner "ansible" {
@@ -51,14 +60,16 @@ build {
     scripts = [
       "${path.root}/scripts/teardown-swap.sh",
     ]
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
 
-    only = ["linode.main"]
+    except = ["docker.main"]
   }
 
   provisioner "shell" {
     scripts = [
       "${path.root}/scripts/cleanup.sh",
     ]
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
   }
   provisioner "shell" {
     scripts = [
@@ -66,6 +77,7 @@ build {
       # the template and minimize image size at the end.
       "${path.root}/scripts/vm-cleanup.sh",
     ]
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
 
     except = ["docker.main"]
   }
