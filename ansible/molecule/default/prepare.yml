@@ -1,6 +1,50 @@
 ---
 - name: Prepare
   hosts: all
+  vars:
+    swap_file: /provisioning_swap_file
+    gb_swap_size: 3
   tasks:
-    - name: Alive Checker
-      ping:
+
+    - name: Set swapiness
+      sysctl:
+        name: vm.swappiness
+        value: '1'
+      become: true
+
+    - name: Check for swapfile
+      stat:
+        path: '{{ swap_file }}'
+      register: swap
+
+    - name: Remove incorrectly sized swapfile
+      shell:
+        cmd: |
+          swapoff {{ swap_file }}
+          rm -rf {{ swap_file }}
+      when: swap.stat.exists and (swap.stat.size / (1024 * 1024 * 1024)) < gb_swap_size
+
+    - name: Create swapfile
+      command:
+        cmd: 'dd if=/dev/zero of={{ swap_file }} bs=1024 count={{ gb_swap_size * 1024 * 1024 }}'
+        creates: '{{ swap_file }}'
+      become: true
+      when: not swap.stat.exists or (swap.stat.size / (1024 * 1024 * 1024)) < gb_swap_size
+
+    - name: Set perms for swapfile
+      file:
+        path: '{{ swap_file }}'
+        owner: root
+        group: root
+        mode: '600'
+      become: true
+
+    - name: Enable swap
+      shell:
+        cmd: |
+          mkswap {{ swap_file }}
+          swapon {{ swap_file }}
+      become: true
+      when: not swap.stat.exists or (swap.stat.size / (1024 * 1024 * 1024)) < gb_swap_size
+
+# vim: ft=yaml.ansible

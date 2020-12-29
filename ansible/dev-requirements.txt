@@ -24,7 +24,7 @@ commonmark==0.9.1         # via rich
 cookiecutter==1.7.2       # via molecule
 cryptography==3.2.1       # via -c ././requirements.txt, ansible-base, paramiko
 distlib==0.3.1            # via virtualenv
-docker==4.4.0             # via molecule-docker
+distro==1.5.0             # via selinux
 enrich==1.2.3             # via molecule
 filelock==3.0.12          # via virtualenv
 flake8==3.8.4             # via molecule
@@ -34,8 +34,8 @@ jinja2-time==0.2.0        # via cookiecutter
 jinja2==2.11.2            # via -c ././requirements.txt, ansible-base, click-completion, cookiecutter, jinja2-time, molecule
 markupsafe==1.1.1         # via -c ././requirements.txt, cookiecutter, jinja2
 mccabe==0.6.1             # via flake8
-molecule-docker==0.2.4    # via molecule
-molecule[docker,lint]==3.2.0  # via -r ./dev-requirements.in, molecule-docker
+molecule-vagrant==0.6.1   # via -r ./dev-requirements.in
+molecule[lint]==3.2.0     # via -r ./dev-requirements.in, molecule-vagrant
 nodeenv==1.5.0            # via pre-commit
 packaging==20.7           # via -c ././requirements.txt, ansible-base, molecule
 paramiko==2.7.2           # via molecule
@@ -51,21 +51,21 @@ pynacl==1.4.0             # via paramiko
 pyparsing==2.4.7          # via -c ././requirements.txt, packaging
 python-dateutil==2.8.1    # via arrow
 python-slugify==4.0.1     # via cookiecutter
-pyyaml==5.3.1             # via -c ././requirements.txt, ansible-base, ansible-lint, molecule, pre-commit, yamllint
-requests==2.25.0          # via cookiecutter, docker
+python-vagrant==0.5.15    # via -r ./dev-requirements.in
+pyyaml==5.3.1             # via -c ././requirements.txt, ansible-base, ansible-lint, molecule, molecule-vagrant, pre-commit, yamllint
+requests==2.25.0          # via cookiecutter
 rich==9.2.0               # via ansible-lint, enrich, molecule
-ruamel.yaml.clib==0.2.2   # via ruamel.yaml
 ruamel.yaml==0.16.12      # via ansible-lint
+selinux==0.2.1            # via molecule-vagrant
 shellingham==1.3.2        # via click-completion
-six==1.15.0               # via -c ././requirements.txt, bcrypt, click-completion, cookiecutter, cryptography, docker, pynacl, python-dateutil, virtualenv, websocket-client
+six==1.15.0               # via -c ././requirements.txt, bcrypt, click-completion, cookiecutter, cryptography, pynacl, python-dateutil, virtualenv
 subprocess-tee==0.1.5     # via molecule
 text-unidecode==1.3       # via python-slugify
 toml==0.10.2              # via pre-commit
 typing-extensions==3.7.4.3  # via rich
 urllib3==1.26.2           # via requests
 virtualenv==20.2.1        # via pre-commit
-websocket-client==0.57.0  # via docker
 yamllint==1.25.0          # via molecule
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==51.0.0        # via cerberus, molecule, yamllint
+setuptools==51.0.0        # via cerberus, molecule, selinux, yamllint
