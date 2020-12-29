@@ -1,0 +1,7 @@
+---
+
+- name: 'TODO: Write an assertion that tests something'
+  assert:
+    that: false
+
+# vim: ft=yaml.ansible

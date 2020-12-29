@@ -1,0 +1,5 @@
+---
+- name: Automated tests
+  hosts: all
+  tasks:
+    - import_tasks: ./tasks/main.yml
