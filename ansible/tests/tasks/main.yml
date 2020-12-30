@@ -14,11 +14,5 @@
 - name: 'Firewall settings (Debian)'
   include_tasks: ufw.yml
   when: ansible_os_family == 'Debian'
-- name: 'System package setup (CentOS)'
-  include_tasks: yum.yml
-  when: ansible_os_family == 'RedHat'
-- name: 'System package setup (Debian)'
-  include_tasks: apt.yml
-  when: ansible_os_family == 'Debian'
 
 # vim: ft=yaml.ansible
