@@ -1,0 +1,28 @@
+---
+- command:  # noqa 502
+    cmd: cat /etc/ssh/sshd_config
+  changed_when: false
+  become: true
+  register: sshd_config
+
+- name: Assert SSH Port is configured
+  assert:
+    quiet: true
+    that:
+      - 'ssh_port == 22 or ("Port " ~ ssh_port) in sshd_config.stdout_lines'
+
+- name: Assert root cannot login directly over SSH
+  assert:
+    quiet: true
+    that:
+      - '"PermitRootLogin no" in sshd_config.stdout_lines'
+
+- name: Assert public key auth only for SSH
+  assert:
+    quiet: true
+    that:
+      - '"PasswordAuthentication no" in sshd_config.stdout_lines'
+      - '"PasswordAuthentication yes" not in sshd_config.stdout_lines'
+      - '"PubkeyAuthentication no" not in sshd_config.stdout_lines'
+
+# vim: ft=yaml.ansible
