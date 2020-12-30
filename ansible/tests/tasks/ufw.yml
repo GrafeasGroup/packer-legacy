@@ -1,0 +1,19 @@
+---
+- shell:  # noqa 502
+    cmd: 'command -v ufw'
+  failed_when: false
+  changed_when: false
+  register: ufw_cmd
+  become: true
+
+- service_facts:  # noqa 502
+
+- name: 'Assert UFW is installed'
+  assert:
+    quiet: true
+    that:
+      - ufw_cmd.rc == 0
+      - ansible_facts.services["ufw.service"] is defined
+      - ansible_facts.services["ufw.service"].status == "enabled"
+
+# vim: ft=yaml.ansible
