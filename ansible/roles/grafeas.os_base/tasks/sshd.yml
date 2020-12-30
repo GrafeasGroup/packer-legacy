@@ -9,6 +9,7 @@
     owner: root
     mode: '644'
   when: ssh_port != 22
+  notify: restart sshd
   become: true
 
 - name: Disallow remote root login
@@ -19,6 +20,7 @@
     group: root
     owner: root
     mode: '644'
+  notify: restart sshd
   become: true
 
 - name: Disallow password authentication over SSH
