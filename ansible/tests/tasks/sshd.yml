@@ -5,11 +5,25 @@
   become: true
   register: sshd_config
 
+- shell:  # noqa 502
+    # NOTE: Just because selinux is enabled doesn't mean we have `semanage`
+    # installed. Do feature detection purely based on the presence of the
+    # `semanage` command to determine if we can check selinux port labels.
+    cmd: |
+      if command -v semanage &>/dev/null; then
+        # List of port labels, sans the table header
+        semanage port -l | tail -n +1
+      fi
+  changed_when: false
+  become: true
+  register: selinux_ports
+
 - name: Assert SSH Port is configured
   assert:
     quiet: true
     that:
       - 'ssh_port == 22 or ("Port " ~ ssh_port) in sshd_config.stdout_lines'
+      - '(not selinux_ports.stdout) or (selinux_ports.stdout | regex_search("^ssh_port_t\\s+tcp\\s+" ~ (ssh_port | regex_escape) ~ "$"))'
 
 - name: Assert root cannot login directly over SSH
   assert:
