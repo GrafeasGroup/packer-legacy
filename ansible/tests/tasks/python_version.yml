@@ -1,0 +1,31 @@
+---
+- name: Stat Python binaries
+  stat:
+    path: '{{ item }}'
+  loop:
+    - /usr/local/bin/python
+    - /usr/local/bin/python3
+    - /usr/local/bin/python3.9
+  register: python_bin
+
+- name: Assert Python binary exists
+  assert:
+    that: '{{ item.stat.exists }}'
+    quiet: true
+    success_msg: '{{ item.item }} exists'
+    fail_msg: '{{ item.item }} does not exist'
+  loop: '{{ python_bin.results }}'
+  loop_control:
+    label: '{{ item.item }}'
+
+- name: Assert Python binary is executable
+  assert:
+    that: '{{ item.stat.executable }}'
+    quiet: true
+    success_msg: '{{ item.item }} has a mode of {{ item.stat.mode }}'
+    fail_msg: '{{ item.item }} has a mode of {{ item.stat.mode }}'
+  loop: '{{ python_bin.results }}'
+  loop_control:
+    label: '{{ item.item }}'
+
+# vim: ft=yaml.ansible

@@ -1,0 +1,48 @@
+---
+- name: 'Slurp usernames'
+  command:
+    cmd: 'cut -d: -f1 /etc/passwd'
+  register: usernames
+  changed_when: false
+  become: true
+
+- name: 'Assert automation user exists'
+  assert:
+    that: bot_username in usernames.stdout_lines
+    quiet: true
+    fail_msg: '{{ bot_username }} does not exist'
+
+- stat:
+    path: '/home/{{ bot_username }}/.ssh/authorized_keys'
+  register: bot_pubkeys
+  become: true
+
+- name: 'Assert bot has public key access'
+  assert:
+    that: bot_pubkeys.stat.exists
+    quiet: true
+    fail_msg: 'No public keys are configured for {{ bot_username }}'
+
+- name: Stat sudoers
+  stat:
+    path: /etc/sudoers.d/bot
+  register: sudoers_file
+  become: true
+
+- name: Find sudoers
+  command:
+    cmd: 'grep -Fe "{{ bot_username }}" /etc/sudoers.d/bot'
+  register: sudoers
+  changed_when: false
+  when: sudoers_file.stat.exists
+  become: true
+
+- name: Assert automation user is allowed passwordless sudo
+  assert:
+    that:
+      - 'sudoers_file.stat.exists'
+      - 'bot_username in sudoers.stdout'
+      - '"NOPASSWD" in sudoers.stdout'
+    quiet: true
+
+# vim: ft=yaml.ansible
