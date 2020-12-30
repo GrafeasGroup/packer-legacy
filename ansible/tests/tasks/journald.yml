@@ -1,0 +1,32 @@
+---
+- stat:  # noqa 502
+    path: /var/log/journal
+  register: journald_logs
+
+- name: Assert journald can persist logs between reboots
+  assert:
+    that: journald_logs.stat.exists
+    quiet: true
+
+- command:  # noqa 502 303
+    cmd: 'systemctl is-enabled systemd-journald.service'
+  become: true
+  failed_when: false
+  changed_when: false
+  register: journald_service_enabled
+
+- command:  # noqa 502 303
+    cmd: 'systemctl is-active systemd-journald.service'
+  become: true
+  failed_when: false
+  changed_when: false
+  register: journald_service_running
+
+- name: Assert journald will run now and forever
+  assert:
+    that:
+      - journald_service_enabled.rc == 0
+      - journald_service_running.rc == 0
+    quiet: true
+
+# vim: ft=yaml.ansible

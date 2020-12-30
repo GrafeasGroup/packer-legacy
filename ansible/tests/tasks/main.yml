@@ -1,6 +1,24 @@
 ---
 
-- import_tasks: ./automation_user.yml
-- import_tasks: ./python_version.yml
+- name: 'Automated access'
+  include_tasks: automation_user.yml
+- name: 'Custom Python installation'
+  include_tasks: python_version.yml
+- name: 'System logging'
+  include_tasks: journald.yml
+- name: 'SSH security'
+  include_tasks: sshd.yml
+- name: 'Firewall settings (CentOS)'
+  include_tasks: firewalld.yml
+  when: ansible_os_family == 'RedHat'
+- name: 'Firewall settings (Debian)'
+  include_tasks: ufw.yml
+  when: ansible_os_family == 'Debian'
+- name: 'System package setup (CentOS)'
+  include_tasks: yum.yml
+  when: ansible_os_family == 'RedHat'
+- name: 'System package setup (Debian)'
+  include_tasks: apt.yml
+  when: ansible_os_family == 'Debian'
 
 # vim: ft=yaml.ansible

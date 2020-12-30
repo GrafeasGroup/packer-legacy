@@ -1,6 +1,5 @@
 ---
-- name: Stat Python binaries
-  stat:
+- stat:  # noqa 502
     path: '{{ item }}'
   loop:
     - /usr/local/bin/python
