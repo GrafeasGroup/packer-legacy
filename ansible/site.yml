@@ -12,5 +12,5 @@
       delay: 3
 
   roles:
-    - grafeas.os_base
-    - thelonelyghost.python
+    - name: grafeas.os_base
+    - name: thelonelyghost.python
