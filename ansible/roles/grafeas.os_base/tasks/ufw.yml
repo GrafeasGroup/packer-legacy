@@ -26,7 +26,4 @@
   community.general.ufw:
     state: enabled
     policy: deny
-  # Skip in molecule testing, since containers +
-  # kernel modules (iptables) = big problem
-  when: not lookup('env', 'MOLECULE_FILE')
   become: true
