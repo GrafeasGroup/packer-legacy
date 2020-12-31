@@ -12,5 +12,10 @@
 - name: SSH Security
   include_tasks: sshd.yml
 
-- name: Firewall Settings
-  include_tasks: '{{ ansible_os_family == "RedHat" | ternary("firewalld", "ufw") }}.yml'
+- name: Firewall Settings (ufw)
+  include_tasks: ufw.yml
+  when: ansible_os_family == "Debian"
+
+- name: Firewall Settings (firewalld)
+  include_tasks: firewalld.yml
+  when: ansible_os_family == "RedHat"

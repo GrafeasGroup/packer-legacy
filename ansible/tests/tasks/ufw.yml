@@ -1,5 +1,5 @@
 ---
-- shell:  # noqa 502
+- shell:  # noqa 502 305
     cmd: 'command -v ufw'
   failed_when: false
   changed_when: false
@@ -14,7 +14,7 @@
 # "started" from UFW's standpoint, but "stopped" from
 # systemd. The main way to see if ufw is working is to
 # call `ufw status` and parse that output. Gross.
-- command:
+- command:  # noqa 502
     cmd: ufw status
   failed_when: false
   changed_when: false
