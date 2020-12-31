@@ -8,12 +8,28 @@
 
 - service_facts:  # noqa 502
 
-- name: 'Assert UFW is installed'
+
+# UFW interaction with systemd is weird. Systemd spawns
+# a process that later exits... and that's considered
+# "started" from UFW's standpoint, but "stopped" from
+# systemd. The main way to see if ufw is working is to
+# call `ufw status` and parse that output. Gross.
+- command:
+    cmd: ufw status
+  failed_when: false
+  changed_when: false
+  register: ufw_status
+  when: ufw_cmd.rc == 0
+  become: true
+
+- name: 'Assert UFW is installed and running'
   assert:
     quiet: true
     that:
       - ufw_cmd.rc == 0
       - ansible_facts.services["ufw.service"] is defined
-      - ansible_facts.services["ufw.service"].status == "enabled"
+      - ufw_status is defined
+      - (ufw_status.stdout_lines | length) >= 1
+      - ufw_status.stdout_lines[0] == 'Status: active'
 
 # vim: ft=yaml.ansible
