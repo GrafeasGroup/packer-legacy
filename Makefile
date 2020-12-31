@@ -8,10 +8,10 @@ VAGRANT_PROVIDER=virtualbox
 VAGRANT_BOX_NAME:=grafeas/legacy
 
 .PHONY: all
-all: test vagrant docker
+all: test vagrant
 
 .PHONY: release
-release: vagrant-release docker-release
+release: vagrant-release
 
 .PHONY: linode
 linode: secrets.hcl
@@ -41,36 +41,8 @@ vagrant-release: vagrant-push vagrant-login
 vagrant-clean:
 	rm -rf ./output-main
 
-.PHONY: docker
-docker:
-	packer build -only=docker.main -var 'docker_image_name=$(IMAGE_NAME)' -var 'docker_image_tag=$(IMAGE_VERSION)' .
-
-.PHONY: docker-login
-docker-login:
-	@# Extracts the domain part of the image name (e.g., `docker.io`
-	@# from `docker.io/example/foo`) and runs it through `docker login`
-	env IMAGE_NAME=$(IMAGE_NAME) bash -c 'docker login "$${IMAGE_NAME/\/*/}"'
-
-.PHONY: docker-push
-docker-push: docker-login
-	docker tag $(IMAGE_NAME):$(IMAGE_VERSION)-dev $(IMAGE_NAME):edge
-	docker push '$(IMAGE_NAME):$(IMAGE_VERSION)-dev'
-	docker push '$(IMAGE_NAME):edge'
-
-.PHONY: docker-release
-docker-release: docker-login
-	docker tag $(IMAGE_NAME):$(IMAGE_VERSION)-dev $(IMAGE_NAME):$(IMAGE_VERSION)
-	docker tag $(IMAGE_NAME):$(IMAGE_VERSION)-dev $(IMAGE_NAME):latest
-	docker push '$(IMAGE_NAME):$(IMAGE_VERSION)'
-	docker push '$(IMAGE_NAME):latest'
-
-.PHONY: docker-clean
-docker-clean:
-	for image in `docker images --format '{{ .ID }}' docker.io/library/debian:10`; do docker rmi "$$image"; done
-	for image in `docker images --format '{{ .ID }}' '$(IMAGE_NAME)'`; do docker rmi "$$image"; done
-
 .PHONY: clean
-clean: docker-clean vagrant-clean
+clean: vagrant-clean
 	rm -rf ./ansible/venv
 
 secrets.hcl:

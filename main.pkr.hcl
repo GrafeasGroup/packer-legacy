@@ -16,16 +16,6 @@ source "linode" "main" {
   instance_tags  = ["packer", "delete-me-if-older-than-4-hours"]
 }
 
-# This is for later molecule tests in the Ansible
-# workspace for deploying things
-source "docker" "main" {
-  image  = "docker.io/library/debian:10"
-  tmpfs  = [
-    "/run",
-  ]
-  commit = true
-}
-
 source "vagrant" "main" {
   communicator = "ssh"
   provider     = "virtualbox"

@@ -4,19 +4,6 @@ variable "linode_api_key" {
   sensitive   = true
 }
 
-variable "docker_image_name" {
-  type        = string
-  description = "Name of the docker image (including hostname if not docker hub)"
-  default     = "quay.io/thelonelyghost/grafeas-molecule-legacy"
-  sensitive   = false
-}
-
-variable "docker_image_tag" {
-  type        = string
-  description = "Tag to apply to the docker image"
-  default     = "latest"
-  sensitive   = false
-}
 
 variable "ssh_port" {
   type        = number

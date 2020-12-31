@@ -2,30 +2,21 @@
 
 HashiCorp [Packer] is a tool for building (primarily) VM templates, for use with on-prem or cloud providers, in a repeatable, scripted manner. For our purposes, it creates a base image where we can cache some rather expensive (time, CPU, etc.) operations so that scaling or disaster recovery occurs much faster. It's also one of the core components of an ephemeral infrastructure approach to things.
 
-We output 3 types of images here:
+We output 2 types of images here:
 
-- Linode (VM)
-- Docker (container)
-- Vagrant (VM)
+- [Linode]
+- [Vagrant] (provider: [VirtualBox])
 
-The Docker image and Vagrant box are intended entirely for testing purposes in downstream efforts.
+The Vagrant box is intended entirely for testing purposes in downstream efforts.
 
-Docker provides a good approximation of a VM environment, with some caveats, and allows for a _vast_ increase in speed of iterating as compared to a VM. One known caveat is an incompatibility between Docker and systemd, even when [jumping][docker-systemd-1] [through][docker-systemd-2] [drastic][docker-systemd-3] [hoops][docker-systemd-4]. Any of the solutions found were required a lot of hackery-pokery or flat-out didn't work when tested.
-
-For these reasons, we also include the Vagrant box as an alternate option for testing. This allows us to more fully emulate how a system would work in Linode, but entirely on a local basis.
-
-[docker-systemd-1]: https://markandruth.co.uk/2020/10/10/running-systemd-inside-a-centos-8-docker-container
-[docker-systemd-2]: https://developers.redhat.com/blog/2014/05/05/running-systemd-within-docker-container/
-[docker-systemd-3]: https://developers.redhat.com/blog/2019/04/24/how-to-run-systemd-in-a-container/
-[docker-systemd-4]: https://lwn.net/Articles/676831/
+## Special note on testing
 
 ## Requirements
 
 - Install [Packer] 1.6.0
 - Install Python 3.6 or higher
 - Install Make (default on Linux or MacOS should be fine)
-- Linode API token generated
-- Install [Docker]
+- [Linode] API token generated
 - Install [Vagrant]
 - Install [VirtualBox] (with extension pack)
 
@@ -33,7 +24,6 @@ Set these environment variables to your chosen values, if you need to override t
 
 | Var                 | Default                                          | Description                                                      |
 |:-------------------:|:------------------------------------------------:|:-----------------------------------------------------------------|
-| `IMAGE_NAME`        | `quay.io/thelonelyghost/grafeas-molecule-legacy` | Docker image name (and host) for the `docker.main` Packer target |
 | `VAGRANT_BOX_NAME`  | `grafeas/legacy`                                 | Vagrant box name for the `vagrant.main` Packer target            |
 
 ... and set these values in `secrets.hcl`:
@@ -66,37 +56,20 @@ At time of writing and keeping with our billing model, Linode allows for a max o
 
 ## Test Images
 
-For testing purposes later down the line, we may want to create a container image that's similar to the VM template we've just created. Since testing systemd doesn't work too well in containers, we also should create a local VM image for use with [Vagrant]. Due to cross-platform support and ease of access, the [VirtualBox] provider was chosen to work with Vagrant.
+For testing purposes later down the line, we may want to create a container image that's similar to the VM template we've just created. Since testing systemd doesn't work too well in containers, we create a local VM image for use with [Vagrant]. Due to cross-platform support and ease of access, the [VirtualBox] provider was chosen to work with Vagrant.
 
 These base images (except Linode's) are to help with testing [Ansible] in downstream efforts, such as deploying applications to the servers, running a copy of the application in a production-like environment, etc.
 
 ### Container-based Images
 
-To build the container image on your local workstation, you'll need [Docker] installed and access to the internet. The build process might look like this:
+[Docker] provides a good approximation of a VM environment, with some caveats, and allows for a _vast_ increase in speed of iterating as compared to a VM. One known caveat is an incompatibility between Docker and systemd, even when [jumping][docker-systemd-1] [through][docker-systemd-2] [drastic][docker-systemd-3] [hoops][docker-systemd-4]. Any of the solutions found were required a lot of hackery-pokery or flat-out didn't work when tested.
 
-```shell
-# Validate it
+For these reasons, we use the Vagrant box for testing. This allows us to more fully emulate how a system would work in Linode, but entirely on a local basis.
 
-~/workspace/packer-legacy $ make test
-
-# Set your container image's name
-
-~/workspace/packer-legacy $ export IMAGE_NAME='quay.io/thelonelyghost/grafeas-molecule-legacy'
-
-# Build it
-
-~/workspace/packer-legacy $ make docker
-
-# Then publish it
-
-~/workspace/packer-legacy $ make docker-push
-```
-
-Once it's tested and deemed in good working order, mark it as stable with `make docker-release`.
-
-Except for incompatibility with systemd functionality, (ab)using Docker to act like a VM is a pretty close approximation to a fully-fledged VM on Linode. But using Docker allows us to iterate a _lot_ faster than using an actual VM hypervisor.
-
-For everything else, we should use VirtualBox with Vagrant to have a full picture of how a VM will execute...
+[docker-systemd-1]: https://markandruth.co.uk/2020/10/10/running-systemd-inside-a-centos-8-docker-container
+[docker-systemd-2]: https://developers.redhat.com/blog/2014/05/05/running-systemd-within-docker-container/
+[docker-systemd-3]: https://developers.redhat.com/blog/2019/04/24/how-to-run-systemd-in-a-container/
+[docker-systemd-4]: https://lwn.net/Articles/676831/
 
 ### Local VM Images
 
@@ -111,13 +84,13 @@ To build the image that can be imported into Vagrant later, you'll need [Vagrant
 
 ~/workspace/packer-legacy $ export VAGRANT_BOX_NAME='grafeas/legacy'
 
-# Build it
+# Set the semver-style version of the Vagrant box (e.g., 1.0.1)
+
+~/workspace/packer-legacy $ echo '1.0.1' > ./VERSION
+
+# Build / publish it
 
 ~/workspace/packer-legacy $ make vagrant
-
-# Then publish it
-
-~/workspace/packer-legacy $ make vagrant-push
 ```
 
 Once it's tested and deemed in good working order, mark it as stable with `make vagrant-release`.
@@ -126,11 +99,12 @@ Once it's tested and deemed in good working order, mark it as stable with `make 
 
 Note that there is no continuous integration for this repository. This is due to a few reasons:
 
-1. Linode creates new images on each upload (e.g., `private/12345` vs. `private/67890`) instead of replacing an existing one, which conflicts with our billing model's mandate of 2 custom images at the maximum.
-2. VirtualBox is hard to scale and are very resource-intensive for a CI system, so few (if any) offer it out-of-box like they do Docker.
+1. [Linode] creates new images on each upload (e.g., `private/12345` vs. `private/67890`) instead of replacing an existing one, which conflicts with our billing model's mandate of 2 custom images at the maximum.
+2. [VirtualBox] is hard to scale and are very resource-intensive for a CI system, so few (if any) offer it out-of-box like they do [Docker].
 
 Once these 2 issues are resolved, automatic builds and publishing can occur using a CI/CD system. Until then, builds should be done manually on local workstations in the manner outlined above.
 
+[Linode]: https://www.linode.com/
 [Packer]: https://www.packer.io/
 [Docker]: https://www.docker.com/
 [Vagrant]: https://www.vagrantup.com/

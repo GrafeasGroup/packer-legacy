@@ -1,19 +1,15 @@
 build {
   sources = [
     "linode.main",
-    "docker.main",
     "vagrant.main",
   ]
 
   provisioner "shell" {
+    # Ensure sudo for subsequent build steps. If no sudo and not
+    # logging in as root, we're screwed anyway. Fail out.
     inline = [
-      "apt-get update && apt-get install -y sudo",
+      "if [ `id -u` -eq 1 ]; then apt-get update && apt-get install -y sudo; fi",
     ]
-
-    # This provider has non-root as the default login. By installing sudo,
-    # we are able to consistently call `sudo <whatever>` even if the
-    # executing user is `root`
-    except = ["vagrant.main"]
   }
 
   provisioner "shell" {
@@ -28,8 +24,6 @@ build {
       "${path.root}/scripts/setup-swap.sh",
     ]
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
-
-    except = ["docker.main"]
   }
 
   provisioner "ansible" {
@@ -83,33 +77,14 @@ build {
   provisioner "shell" {
     scripts = [
       "${path.root}/scripts/teardown-swap.sh",
-    ]
-    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
-
-    except = ["docker.main"]
-  }
-
-  provisioner "shell" {
-    scripts = [
       "${path.root}/scripts/cleanup.sh",
-    ]
-    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
-  }
-  provisioner "shell" {
-    scripts = [
+
       # This allows us to remove unique identifiers from
       # the template and minimize image size at the end.
       "${path.root}/scripts/vm-cleanup.sh",
     ]
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
-
-    except = ["docker.main"]
   }
 
-  post-processor "docker-tag" {
-    repository = var.docker_image_name
-    tags       = [var.docker_image_tag]
 
-    only = ["docker.main"]
-  }
 }
