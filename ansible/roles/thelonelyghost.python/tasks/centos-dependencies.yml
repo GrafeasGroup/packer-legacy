@@ -1,5 +1,5 @@
 ---
-- name: 'Install dnf packages'
+- name: Install dnf packages
   dnf:
     name: '{{ python_system.dependencies }}'
     state: present
@@ -7,7 +7,7 @@
   when: ansible_pkg_mgr == 'dnf'
   become: true
 
-- name: 'Install yum packages'
+- name: Install yum packages
   yum:
     name: '{{ python_system.dependencies }}'
     state: present

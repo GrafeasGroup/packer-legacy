@@ -11,7 +11,7 @@
     immediate: true
     offline: true
 
-- name: 'Permit port ssh ports from public zone in firewalld'
+- name: Permit ssh ports from public zone in firewalld
   ansible.posix.firewalld:
     zone: public
     service: ssh

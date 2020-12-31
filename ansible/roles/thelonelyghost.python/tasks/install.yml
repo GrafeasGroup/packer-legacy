@@ -14,7 +14,7 @@
     path: /tmp/python-build-dir
     mode: '700'
 
-- name: 'Check for prior build attempts'
+- name: Check for prior build attempts
   stat:
     path: /tmp/python-build-dir/Python-{{ python_version }}
   register: prior_art
@@ -33,12 +33,12 @@
   args:
     chdir: /tmp/python-build-dir/Python-{{ python_version }}
 
-- name: Compile Python @ {{ python_version }}
+- name: 'Compile Python @ {{ python_version }}'
   community.general.make:
     target: all
     chdir: /tmp/python-build-dir/Python-{{ python_version }}
 
-- name: Install Python to {{ python_bin_dir }}
+- name: 'Install Python to {{ python_bin_dir }}'
   community.general.make:
     target: install
     chdir: /tmp/python-build-dir/Python-{{ python_version }}

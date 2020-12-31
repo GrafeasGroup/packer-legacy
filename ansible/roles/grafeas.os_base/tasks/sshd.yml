@@ -1,6 +1,6 @@
 ---
 
-- name: 'Set SSH port to {{ ssh_port }}'
+- name: Set SSH to non-default port
   lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^(#+\s*Port|Port) '
@@ -34,7 +34,7 @@
   notify: restart sshd
   become: true
 
-- name: 'Permit port {{ ssh_port }} in SELinux configuration'
+- name: Permit SSH port in SELinux configuration
   community.general.seport:
     ports: '{{ (ssh_port ~ ",22").split(",") ] | unique | join(",") }}'
     proto: tcp

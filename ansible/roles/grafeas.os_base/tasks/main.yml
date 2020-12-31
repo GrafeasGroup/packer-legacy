@@ -1,8 +1,8 @@
 ---
 - name: Install system dependencies
   include_tasks: '{{ ansible_distribution | lower }}-dependencies.yml'
-- name: Update Ansible facts with service information
-  service_facts:
+
+- service_facts:  # noqa 502
 
 - name: Enable EPEL
   include_tasks: epel.yml

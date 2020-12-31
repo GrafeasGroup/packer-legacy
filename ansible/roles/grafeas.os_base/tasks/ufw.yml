@@ -1,24 +1,19 @@
 ---
 
-# Note, this module shows up as changed on
-# every run due to a bug in the module. The
-# module is written to account for current
-# state, but it seems it doesn't work as
-# expected
-- name: 'Set UFW logging'
+- name: Set UFW logging
   community.general.ufw:
     logging: 'on'
   become: true
 
-- name: 'Limit burst SSH auth attempts'
+- name: Limit burst SSH auth attempts
   community.general.ufw:
-    comment: 'Limit burst SSH auth attempts to prevent brute force attacks'
+    comment: Limit burst SSH auth attempts to prevent brute force attacks
     rule: limit
     name: ssh
     log: true
   become: true
 
-- name: 'Enable UFW'
+- name: Enable UFW
   community.general.ufw:
     state: enabled
     policy: deny

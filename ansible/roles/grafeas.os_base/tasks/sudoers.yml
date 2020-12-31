@@ -1,11 +1,11 @@
 ---
-- name: "Create local '{{ sudo_group }}' group"
+- name: "Create '{{ sudo_group }}' group"
   group:
     name: '{{ sudo_group }}'
     state: present
   become: true
 
-- name: "Allow '{{ sudo_group }}' group members to use 'sudo' (with password prompt)"
+- name: "Allow sudo (with password) to members of '{{ sudo_group }}'"
   lineinfile:
     regexp: '^%{{ sudo_group }} '
     line: '%{{ sudo_group }} ALL=(ALL) ALL'
@@ -14,7 +14,7 @@
     create: true
     owner: root
     group: root
-    mode: 0440
+    mode: '440'
   become: true
 
 # vim: ft=yaml.ansible
