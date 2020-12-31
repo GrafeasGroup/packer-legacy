@@ -31,7 +31,14 @@ build {
     # sftp_command = "/usr/libexec/openssh/sftp-server -e"
 
     extra_arguments = [
-      "--extra-vars", "bot_username=${var.ssh_username} ssh_port=${var.ssh_port}",
+      "--extra-vars", "bot_username=${var.ssh_username} ssh_port=${var.ssh_port} ansible_python_interpreter=/usr/bin/python3",
+    ]
+
+    # Setting these should fix some of the (false alarm) warnings
+    ansible_env_vars = [
+      "ANSIBLE_HOST_KEY_CHECKING=False",
+      "ANSIBLE_COLLECTIONS_PATH=${path.root}/ansible/collections",
+      "ANSIBLE_ROLES_PATH=${path.root}/ansible/roles",
     ]
 
     groups = ["packer"]
@@ -55,16 +62,23 @@ build {
     # sftp_command = "/usr/libexec/openssh/sftp-server -e"
 
     extra_arguments = [
-      "--extra-vars", "bot_username=${var.ssh_username} ssh_port=${var.ssh_port}",
+      "--extra-vars", "bot_username=${var.ssh_username} ssh_port=${var.ssh_port} ansible_python_interpreter=/usr/bin/python3",
+    ]
+
+    # Setting these should fix some of the (false alarm) warnings
+    ansible_env_vars = [
+      "ANSIBLE_HOST_KEY_CHECKING=False",
+      "ANSIBLE_COLLECTIONS_PATH=${path.root}/ansible/collections",
+      "ANSIBLE_ROLES_PATH=${path.root}/ansible/roles",
     ]
 
     groups = ["packer"]
 
     # Paths to files and locations
     playbook_file       = "${path.root}/ansible/test.yml"
-    galaxy_file         = "${path.root}/ansible/requirements.yml"
-    roles_path          = "${path.root}/ansible/roles"
-    collections_path    = "${path.root}/ansible/collections"
+    # galaxy_file         = "${path.root}/ansible/requirements.yml"
+    # roles_path          = "${path.root}/ansible/roles"
+    # collections_path    = "${path.root}/ansible/collections"
     inventory_directory = "${path.root}/ansible"
   }
 
