@@ -13,14 +13,8 @@ build {
   }
 
   provisioner "shell" {
-    inline = [
-      "apt-get install -y python3",
-    ]
-    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
-  }
-
-  provisioner "shell" {
     scripts = [
+      "${path.root}/scripts/ansible-prep.sh",
       "${path.root}/scripts/setup-swap.sh",
     ]
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
