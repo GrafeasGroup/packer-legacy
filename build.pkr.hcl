@@ -56,6 +56,30 @@ build {
     inventory_directory = "${path.root}/ansible"
   }
 
+  provisioner "ansible" {
+    # Wrap commands in a venv, install it during the run,
+    # and set relevant environment variables
+    command            = "${path.root}/ansible/bin/call-ansible-playbook.sh"
+    galaxy_command     = "${path.root}/ansible/bin/call-ansible-galaxy.sh"
+    skip_version_check = true
+
+    # Because CentOS:
+    # sftp_command = "/usr/libexec/openssh/sftp-server -e"
+
+    extra_arguments = [
+      "--extra-vars", "bot_username=${var.ssh_username} ssh_port=${var.ssh_port}",
+    ]
+
+    groups = ["packer"]
+
+    # Paths to files and locations
+    playbook_file       = "${path.root}/ansible/test.yml"
+    galaxy_file         = "${path.root}/ansible/requirements.yml"
+    roles_path          = "${path.root}/ansible/roles"
+    collections_path    = "${path.root}/ansible/collections"
+    inventory_directory = "${path.root}/ansible"
+  }
+
   provisioner "shell" {
     scripts = [
       "${path.root}/scripts/teardown-swap.sh",
