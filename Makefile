@@ -6,6 +6,7 @@ PACKER_TMP_DIR=/tmp
 
 VAGRANT_PROVIDER=virtualbox
 VAGRANT_BOX_NAME:=grafeas/legacy
+VAGRANT_CLOUD_TOKEN:=
 
 .PHONY: all
 all: test vagrant
@@ -18,39 +19,25 @@ linode: secrets.hcl
 	packer build -var-file=./secrets.hcl -only=linode.main .
 
 .PHONY: vagrant
-vagrant: vagrant-clean
-	packer build -only=vagrant.main .
+vagrant:
+	@echo "packer build -var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' -var 'vagrant_box_version=$(IMAGE_VERSION)' -var 'vagrant_cloud_token=<sensitive>' -only=vagrant.main ."
+	@packer build -var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' -var 'vagrant_box_version=$(IMAGE_VERSION)' -var 'vagrant_cloud_token=$(VAGRANT_CLOUD_TOKEN)' -only=vagrant.main .
 
 .PHONY: vagrant-login
 vagrant-login:
-	@# Because the username/password login method won't work if we have
-	@# MFA enabled, it requires a token existing ahead of time. Let's
-	@# let it fail like it normally would when running `whoami` and pass
-	@# the (helpful) error message on to the end user.
-	vagrant cloud auth whoami 1>/dev/null
-
-.PHONY: vagrant-push
-vagrant-push: output-main/package.box vagrant-login
-	vagrant cloud publish $(VAGRANT_BOX_NAME) $(IMAGE_VERSION) $(VAGRANT_PROVIDER) ./output-main/package.box
+	@echo "vagrant cloud auth login --token='<sensitive>'"
+	@vagrant cloud auth login --token='$(VAGRANT_CLOUD_TOKEN)'
 
 .PHONY: vagrant-release
-vagrant-release: vagrant-push vagrant-login
+vagrant-release: vagrant-login
 	vagrant cloud publish --release $(VAGRANT_BOX_NAME) $(IMAGE_VERSION) $(VAGRANT_PROVIDER)
 
-.PHONY: vagrant-clean
-vagrant-clean:
-	rm -rf ./output-main
-
 .PHONY: clean
-clean: vagrant-clean
+clean:
 	rm -rf ./ansible/venv
 
 secrets.hcl:
 	@echo "ERROR! Please configure secrets.hcl according to the README" 1>&2
-	@exit 1
-
-output-main/package.box:
-	@echo "ERROR! Vagrant box is not yet built" 1>&2
 	@exit 1
 
 .PHONY: test

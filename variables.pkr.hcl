@@ -4,6 +4,26 @@ variable "linode_api_key" {
   sensitive   = true
 }
 
+variable "vagrant_cloud_token" {
+  type        = string
+  description = "Vagrant Cloud API key from https://app.vagrantup.com/settings/security"
+  sensitive   = true
+  default     = ""
+}
+
+variable "vagrant_box_name" {
+  type        = string
+  description = "The shortname of the vagrant box"
+  default     = "grafeas/legacy"
+  sensitive   = false
+}
+
+variable "vagrant_box_version" {
+  type        = string
+  description = "Semver-compliant version string"
+  default     = "0.0.1"
+  sensitive   = false
+}
 
 variable "ssh_port" {
   type        = number

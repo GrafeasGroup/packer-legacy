@@ -86,5 +86,12 @@ build {
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
   }
 
+  post-processor "vagrant-cloud" {
+    box_tag = var.vagrant_box_name
+    version = var.vagrant_box_version
 
+    vagrant_cloud_url = "https://app.vagrantup.com/api/v1"
+    access_token      = var.vagrant_cloud_token
+    no_release        = true
+  }
 }
