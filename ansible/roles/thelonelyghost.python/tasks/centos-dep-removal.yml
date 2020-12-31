@@ -1,7 +1,7 @@
 ---
 - name: Remove unneeded dnf packages
   dnf:
-    name: '{{ python_system.dependencies }}'
+    name: '{{ python_system.removable_dependencies }}'
     state: absent
   when: ansible_pkg_mgr == 'dnf'
   become: true
