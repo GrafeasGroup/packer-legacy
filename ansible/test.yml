@@ -2,6 +2,6 @@
 - name: Automated Testing
   hosts: all
   tasks:
-    - import_tasks: tasks/main.yml
+    - import_tasks: tests/tasks/main.yml
 
 # vim: ft=yaml.ansible

@@ -1,0 +1,16 @@
+---
+
+- name: Automated Access
+  include_tasks: automation_user.yml
+
+- name: Custom Python Installation
+  include_tasks: python_version.yml
+
+- name: System Logging
+  include_tasks: journald.yml
+
+- name: SSH Security
+  include_tasks: sshd.yml
+
+- name: Firewall Settings
+  include_tasks: '{{ ansible_os_family == "RedHat" | ternary("firewalld", "ufw") }}.yml'
