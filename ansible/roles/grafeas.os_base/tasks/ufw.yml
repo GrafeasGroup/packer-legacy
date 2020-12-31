@@ -13,6 +13,15 @@
     log: true
   become: true
 
+- name: Allow non-default SSH port inbound
+  community.general.ini_file:
+    path: /etc/ufw/applications.d/ufw-loginserver
+    section: SSH
+    option: ports
+    value: '22/tcp,{{ ssh_port }}/tcp'
+  become: true
+  when: ssh_port != 22
+
 - name: Enable UFW
   community.general.ufw:
     state: enabled
