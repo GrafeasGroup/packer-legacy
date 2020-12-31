@@ -1,5 +1,30 @@
 ---
-- name: Automated tests
+- name: Automated Access
   hosts: all
   tasks:
-    - import_tasks: tasks/main.yml
+    - import_tasks: tasks/automation_user.yml
+
+- name: Custom Python installation
+  hosts: all
+  tasks:
+    - import_tasks: tasks/python_version.yml
+
+- name: System logging
+  hosts: all
+  tasks:
+    - import_tasks: tasks/journald.yml
+
+- name: SSH security
+  hosts: all
+  tasks:
+    - import_tasks: tasks/sshd.yml
+
+- name: Firewall settings
+  hosts: all
+  tasks:
+    - include_tasks: tasks/firewalld.yml
+      when: ansible_os_family == "RedHat"
+    - include_tasks: tasks/ufw.yml
+      when: ansible_os_family == "Debian"
+
+# vim: ft=yaml.ansible
