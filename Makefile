@@ -49,7 +49,7 @@ vagrant: vagrant-login vagrant-box
 
 .PHONY: vagrant-box
 vagrant-box: vagrant-login
-	if $(CURL) --fail --silent --location --header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' $(VAGRANT_API_BASE)/api/v1/box/$(VAGRANT_BOX_NAME) 1>/dev/null 2>&1; then \
+	if ! $(CURL) --fail --silent --location --header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' $(VAGRANT_API_BASE)/api/v1/box/$(VAGRANT_BOX_NAME) 1>/dev/null 2>&1; then \
 		$(CURL) --fail --show-error --silent --location \
 			--data '{ "box": { "username": "$(word 1,$(subst /, ,$(VAGRANT_BOX_NAME)))", "name": "$(word 2,$(subst /, ,$(VAGRANT_BOX_NAME)))", "short_description": "", "description": "", "is_private": false } }' \
 			--header 'Content-Type: application/json' \
