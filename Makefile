@@ -41,7 +41,7 @@ else
 endif
 
 .PHONY: vagrant
-vagrant: vagrant-login
+vagrant: vagrant-login vagrant-box
 	$(PACKER) build \
 		-var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' \
 		-var 'vagrant_box_version=$(IMAGE_VERSION)' \
@@ -54,7 +54,7 @@ vagrant-box: vagrant-login
 			--data '{ "box": { "username": "$(word 1,$(subst /, ,$(VAGRANT_BOX_NAME)))", "name": "$(word 2,$(subst /, ,$(VAGRANT_BOX_NAME)))", "short_description": "", "description": "", "is_private": false } }' \
 			--header 'Content-Type: application/json' \
 			--header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' \
-			$(VAGRANT_API_BASE)/api/v1/boxes \
+			$(VAGRANT_API_BASE)/api/v1/boxes ; \
 	fi
 
 .PHONY: vagrant-login
