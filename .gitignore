@@ -17,3 +17,4 @@ crash.log
 ansible/packer-provisioner-ansible*
 files/
 /secrets.hcl
+output-main/

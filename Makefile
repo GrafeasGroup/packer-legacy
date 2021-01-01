@@ -41,7 +41,7 @@ else
 endif
 
 .PHONY: vagrant
-vagrant: vagrant-login vagrant-box
+vagrant: vagrant-login vagrant-box vagrant-clean
 	$(PACKER) build \
 		-var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' \
 		-var 'vagrant_box_version=$(IMAGE_VERSION)' \
@@ -79,8 +79,12 @@ vagrant-release: vagrant-login vagrant-box
 		--request PUT \
 		$(VAGRANT_API_BASE)/api/v1/boxes/$(VAGRANT_BOX_NAME)/$(IMAGE_VERSION)/release
 
+.PHONY: vagrant-clean
+vagrant-clean:
+	rm -rf ./output-main
+
 .PHONY: clean
-clean:
+clean: vagrant-clean
 	rm -rf ./ansible/venv
 
 secrets.hcl:
