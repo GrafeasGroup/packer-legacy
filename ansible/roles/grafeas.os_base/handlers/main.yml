@@ -1,7 +1,7 @@
 ---
 
 - name: restart journald
-  service:
+  systemd:
     name: systemd-journald
     state: restarted
   become: true
@@ -10,16 +10,13 @@
   systemd:
     name: firewalld
     state: reloaded
-  when: |
-    (
-      ansible_facts.services['firewalld.service'] is defined
-    ) and (
-      ansible_facts.services['firewalld.service'].state == 'running'
-    )
+  when:
+    - ansible_facts.services['firewalld.service'] is defined
+    - ansible_facts.services['firewalld.service'].state == 'running'
   become: true
 
 - name: restart sshd
-  service:
+  systemd:
     name: "{{ ansible_facts.services['sshd.service'] is defined | ternary('sshd', 'ssh') }}"
     state: restarted
   become: true
