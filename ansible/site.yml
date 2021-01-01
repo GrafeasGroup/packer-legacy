@@ -2,9 +2,6 @@
 - name: Provision Packer image
   hosts: all
 
-  vars:
-    python_version: '3.9.0'
-
   pre_tasks:
     - name: Alive Check
       ping:
