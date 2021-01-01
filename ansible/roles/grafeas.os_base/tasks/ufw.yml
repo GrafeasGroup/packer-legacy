@@ -18,7 +18,7 @@
     path: /etc/ufw/applications.d/ufw-loginserver
     section: SSH
     option: ports
-    value: '22/tcp,{{ ssh_port }}/tcp'
+    value: '22/tcp|{{ ssh_port }}'
   become: true
   when: ssh_port != 22
 
@@ -27,3 +27,4 @@
     state: enabled
     policy: deny
   become: true
+  when: false
