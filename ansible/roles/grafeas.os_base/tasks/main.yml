@@ -16,10 +16,6 @@
   include_tasks: firewalld.yml
   when: ansible_facts.services['firewalld.service'] is defined
 
-- name: Configure UFW
-  include_tasks: ufw.yml
-  when: ansible_facts.services['ufw.service'] is defined
-
 - import_tasks: automation_access.yml
 - import_tasks: sudoers.yml
 - import_tasks: sshd.yml
