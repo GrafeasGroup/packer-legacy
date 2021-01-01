@@ -19,6 +19,12 @@
     path: /tmp/python-build-dir/Python-{{ python_version }}
   register: prior_art
 
+- name: Swap On!
+  include_tasks: setup_swap.yml
+  vars:
+    swap_file: /provisioning_swap_file
+    gb_swap_size: 3
+
 - name: Download Python source
   unarchive:
     dest: /tmp/python-build-dir
@@ -52,5 +58,12 @@
     state: absent
     path: /tmp/python-build-dir
   become: true
+
+- name: Swap Off!
+  include_tasks: teardown_swap.yml
+  vars:
+    swap_file: /provisioning_swap_file
+    gb_swap_size: 3
+
 
 # vim: ft=yaml.ansible

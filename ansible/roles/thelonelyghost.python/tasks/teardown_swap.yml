@@ -1,0 +1,15 @@
+---
+- name: Check for swapfile
+  stat:
+    path: '{{ swap_file }}'
+  register: swap
+
+- name: Disable swap
+  shell:
+    cmd: |
+      swapoff {{ swap_file }}
+      rm -rf {{ swap_file }}
+  become: true
+  when: swap.stat.exists
+
+# vim: ft=yaml.ansible

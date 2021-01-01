@@ -15,7 +15,6 @@ build {
   provisioner "shell" {
     scripts = [
       "${path.root}/scripts/ansible-prep.sh",
-      "${path.root}/scripts/setup-swap.sh",
     ]
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
   }
@@ -84,7 +83,6 @@ build {
 
   provisioner "shell" {
     scripts = [
-      "${path.root}/scripts/teardown-swap.sh",
       "${path.root}/scripts/cleanup.sh",
 
       # This allows us to remove unique identifiers from
