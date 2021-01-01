@@ -1,3 +1,6 @@
+# weird static analysis bugs are weird
+.PHONY: CURL PACKER
+
 IMAGE_VERSION:=$(shell cat ./VERSION)
 
 IMAGE_NAME:=quay.io/thelonelyghost/grafeas-molecule-legacy
@@ -8,8 +11,11 @@ VAGRANT_PROVIDER=virtualbox
 VAGRANT_BOX_NAME:=grafeas/legacy
 VAGRANT_API_BASE=https://app.vagrantup.com
 # VAGRANT_CLOUD_TOKEN:=
-
 # LINODE_TOKEN:=
+
+CURL:=$(shell command -v curl)
+PACKER:=$(shell command -v packer)
+
 
 .PHONY: all
 all: test vagrant
@@ -19,12 +25,12 @@ release: vagrant-release
 
 .PHONY: linode
 linode: secrets.hcl linode-login
-	packer build -var-file=./secrets.hcl -only=linode.main .
+	$(PACKER) build -var-file=./secrets.hcl -only=linode.main .
 
 .PHONY: linode-login
 linode-login:
 ifneq ($(strip $(LINODE_TOKEN)),)
-	@curl --fail --silent --show-error --location \
+	@$(CURL) --fail --silent --show-error --location \
 		--output /dev/null \
 		--header 'Authorization: Bearer $(LINODE_TOKEN)' \
 		https://api.linode.com/v4/account
@@ -36,15 +42,15 @@ endif
 
 .PHONY: vagrant
 vagrant: vagrant-login
-	packer build \
+	$(PACKER) build \
 		-var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' \
 		-var 'vagrant_box_version=$(IMAGE_VERSION)' \
 		-only=vagrant.main .
 
 .PHONY: vagrant-box
 vagrant-box: vagrant-login
-	if curl --fail --silent --location --header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' $(VAGRANT_API_BASE)/api/v1/box/$(VAGRANT_BOX_NAME) 1>/dev/null 2>&1; then \
-		curl --fail --show-error --silent --location \
+	if $(CURL) --fail --silent --location --header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' $(VAGRANT_API_BASE)/api/v1/box/$(VAGRANT_BOX_NAME) 1>/dev/null 2>&1; then \
+		$(CURL) --fail --show-error --silent --location \
 			--data '{ "box": { "username": "$(word 1,$(subst /, ,$(VAGRANT_BOX_NAME)))", "name": "$(word 2,$(subst /, ,$(VAGRANT_BOX_NAME)))", "short_description": "", "description": "", "is_private": false } }' \
 			--header 'Content-Type: application/json' \
 			--header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' \
@@ -54,7 +60,7 @@ vagrant-box: vagrant-login
 .PHONY: vagrant-login
 vagrant-login:
 ifneq ($(strip $(VAGRANT_CLOUD_TOKEN)),)
-	@curl --fail --silent --show-error --location \
+	@$(CURL) --fail --silent --show-error --location \
 		--output /dev/null \
 		--header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' \
 		https://app.vagrantup.com/api/v1/authenticate
@@ -68,7 +74,7 @@ endif
 .PHONY: vagrant-release
 vagrant-release: vagrant-login vagrant-box
 	@# vagrant cloud publish --release $(VAGRANT_BOX_NAME) $(IMAGE_VERSION) $(VAGRANT_PROVIDER)
-	curl --fail --show-error --silent --location \
+	$(CURL) --fail --show-error --silent --location \
 		--header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' \
 		--request PUT \
 		$(VAGRANT_API_BASE)/api/v1/boxes/$(VAGRANT_BOX_NAME)/$(IMAGE_VERSION)/release
@@ -89,4 +95,4 @@ test-login: vagrant-login linode-login
 
 .PHONY: test-packer
 test-packer:
-	packer validate .
+	$(PACKER) validate .
