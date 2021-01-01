@@ -6,7 +6,9 @@ PACKER_TMP_DIR=/tmp
 
 VAGRANT_PROVIDER=virtualbox
 VAGRANT_BOX_NAME:=grafeas/legacy
-VAGRANT_CLOUD_TOKEN:=
+# VAGRANT_CLOUD_TOKEN:=
+
+# LINODE_TOKEN:=
 
 .PHONY: all
 all: test vagrant
@@ -15,18 +17,42 @@ all: test vagrant
 release: vagrant-release
 
 .PHONY: linode
-linode: secrets.hcl
+linode: secrets.hcl linode-login
 	packer build -var-file=./secrets.hcl -only=linode.main .
 
+.PHONY: linode-login
+linode-login:
+ifneq ($(strip $(LINODE_TOKEN)),)
+	@curl --fail --silent --show-error --location \
+		--output /dev/null \
+		--header 'Authorization: Bearer $(LINODE_TOKEN)' \
+		https://api.linode.com/v4/account
+	@echo LINODE_TOKEN is valid
+else
+	@echo 'ERROR: Missing environment variable value for LINODE_TOKEN. Set it and export it' >&2
+	@exit 1
+endif
+
 .PHONY: vagrant
-vagrant:
-	@echo "packer build -var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' -var 'vagrant_box_version=$(IMAGE_VERSION)' -var 'vagrant_cloud_token=<sensitive>' -only=vagrant.main ."
-	@packer build -var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' -var 'vagrant_box_version=$(IMAGE_VERSION)' -var 'vagrant_cloud_token=$(VAGRANT_CLOUD_TOKEN)' -only=vagrant.main .
+vagrant: vagrant-login
+	packer build \
+		-var 'vagrant_box_name=$(VAGRANT_BOX_NAME)' \
+		-var 'vagrant_box_version=$(IMAGE_VERSION)' \
+		-only=vagrant.main .
 
 .PHONY: vagrant-login
 vagrant-login:
-	@echo "vagrant cloud auth login --token='<sensitive>'"
-	@vagrant cloud auth login --token='$(VAGRANT_CLOUD_TOKEN)'
+ifneq ($(strip $(VAGRANT_CLOUD_TOKEN)),)
+	@curl --fail --silent --show-error --location \
+		--output /dev/null \
+		--header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' \
+		https://app.vagrantup.com/api/v1/authenticate
+	@# vagrant cloud auth login --check 1>/dev/null 2>&1
+	@echo VAGRANT_CLOUD_TOKEN is valid
+else
+	@echo 'ERROR: Missing environment variable value for VAGRANT_CLOUD_TOKEN. Set it and export it' >&2
+	@exit 1
+endif
 
 .PHONY: vagrant-release
 vagrant-release: vagrant-login
@@ -41,5 +67,11 @@ secrets.hcl:
 	@exit 1
 
 .PHONY: test
-test:
+test: test-packer vagrant-login linode-login
+
+.PHONY: test-login
+test-login: vagrant-login linode-login
+
+.PHONY: test-packer
+test-packer:
 	packer validate .

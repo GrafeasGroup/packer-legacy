@@ -22,14 +22,15 @@ The Vagrant box is intended entirely for testing purposes in downstream efforts.
 
 Set these environment variables to your chosen values, if you need to override the defaults:
 
-| Var                 | Default                                          | Description                                                      |
-|:-------------------:|:------------------------------------------------:|:-----------------------------------------------------------------|
-| `VAGRANT_BOX_NAME`  | `grafeas/legacy`                                 | Vagrant box name for the `vagrant.main` Packer target            |
+| Var                   | Default           | Description                                                   |
+|:---------------------:|:-----------------:|:--------------------------------------------------------------|
+| `LINODE_TOKEN`        | _(required)_      | Linode token for the `linode.main` Packer target              |
+| `VAGRANT_CLOUD_TOKEN` | _(required)_      | Vagrant Cloud token name for the `vagrant.main` Packer target |
+| `VAGRANT_BOX_NAME`    | `grafeas/legacy`  | Vagrant box name for the `vagrant.main` Packer target         |
 
 ... and set these values in `secrets.hcl`:
 
 ```hcl
-linode_api_key = "fake-api-key-xxxxxxxxxxxxxxxx"
 ssh_username   = "my-automation-user"
 ssh_port       = 8022
 ```

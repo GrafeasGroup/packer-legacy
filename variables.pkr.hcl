@@ -1,16 +1,3 @@
-variable "linode_api_key" {
-  type        = string
-  description = "Linode API key from https://cloud.linode.com/profile/tokens"
-  sensitive   = true
-}
-
-variable "vagrant_cloud_token" {
-  type        = string
-  description = "Vagrant Cloud API key from https://app.vagrantup.com/settings/security"
-  sensitive   = true
-  default     = ""
-}
-
 variable "vagrant_box_name" {
   type        = string
   description = "The shortname of the vagrant box"

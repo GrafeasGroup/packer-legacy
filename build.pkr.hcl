@@ -99,7 +99,6 @@ build {
     version = var.vagrant_box_version
 
     vagrant_cloud_url = "https://app.vagrantup.com/api/v1"
-    access_token      = var.vagrant_cloud_token
     no_release        = true
   }
 }

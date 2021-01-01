@@ -3,7 +3,6 @@ packer {
 }
 
 source "linode" "main" {
-  linode_token = var.linode_api_key
   image        = "linode/debian10"
   region       = "us-east"
   ssh_username = "root"
