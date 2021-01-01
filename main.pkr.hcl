@@ -20,10 +20,4 @@ source "vagrant" "main" {
   provider     = "virtualbox"
   add_force    = true
   source_path  = "generic/debian10"
-
-  output_vagrantfile = <<-EOH
-  Vagrant.configure("2") do |config|
-    config.ssh.guest_port = ${var.ssh_port}
-  end
-  EOH
 }
