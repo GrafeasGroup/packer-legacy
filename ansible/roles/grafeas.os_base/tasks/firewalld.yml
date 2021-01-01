@@ -1,6 +1,6 @@
 ---
 
-- name: 'Permit port {{ ssh_port }} through firewalld'
+- name: Permit SSH port through firewalld
   ansible.posix.firewalld:
     port: '{{ ssh_port }}/tcp'
     state: enabled
