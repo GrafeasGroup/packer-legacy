@@ -3,7 +3,7 @@
   apt:
     name:
       - openssh-server
-      - ufw
+      - firewalld
     state: present
     autoclean: true
     autoremove: true
