@@ -92,6 +92,15 @@ build {
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
   }
 
+  provisioner "shell" {
+    scripts = [
+      "${path.root}/scripts/zero-out-disk.sh",
+    ]
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
+
+    only = ["linode.main"]
+  }
+
   post-processor "vagrant-cloud" {
     box_tag = var.vagrant_box_name
     version = var.vagrant_box_version
