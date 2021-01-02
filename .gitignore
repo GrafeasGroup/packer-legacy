@@ -19,4 +19,3 @@ files/
 /secrets.hcl
 output-main/
 .vagrant/
-/Vagrantfile
