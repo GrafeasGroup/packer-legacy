@@ -1,3 +1,5 @@
 ---
-# This is an example playbook to execute Ansible tests.
-- import_playbook: ../../tests/test.yml
+- import_playbook: ../../test.yml
+  vars:
+    ssh_port: 8022
+    bot_username: my_bot_user

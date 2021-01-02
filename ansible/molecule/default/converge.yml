@@ -1,2 +1,5 @@
 ---
 - import_playbook: ../../site.yml
+  vars:
+    ssh_port: 8022
+    bot_username: my_bot_user
