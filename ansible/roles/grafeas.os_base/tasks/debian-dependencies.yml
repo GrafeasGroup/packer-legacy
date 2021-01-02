@@ -25,7 +25,7 @@
 # https://github.com/saltstack/salt/issues/55110#issuecomment-546735717
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=931722
 - name: Fix buggy iptables
-  apt:
+  apt:  # noqa 403
     name: iptables
     default_release: '{{ ansible_facts.distribution_release }}-backports'
     state: latest

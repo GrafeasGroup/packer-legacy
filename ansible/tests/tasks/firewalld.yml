@@ -6,13 +6,13 @@
   become: true
   changed_when: false
 
-- command:  # noqa 502
+- command:  # noqa 502 303
     cmd: systemctl is-enabled firewalld.service
   become: true
   changed_when: false
   register: firewalld_enabled
 
-- command:  # noqa 502
+- command:  # noqa 502 303
     cmd: systemctl is-active firewalld.service
   become: true
   changed_when: false
