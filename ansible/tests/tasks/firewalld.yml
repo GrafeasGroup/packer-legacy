@@ -1,1 +1,26 @@
 ---
+
+- name: Firewalld state
+  command:
+    cmd: firewall-cmd --state
+  become: true
+  changed_when: false
+
+- command:  # noqa 502
+    cmd: systemctl is-enabled firewalld.service
+  become: true
+  changed_when: false
+  register: firewalld_enabled
+
+- command:  # noqa 502
+    cmd: systemctl is-active firewalld.service
+  become: true
+  changed_when: false
+  register: firewalld_active
+
+- name: 'Assert that firewalld service is running'
+  assert:
+    quiet: true
+    that:
+      - firewalld_enabled.rc == 0
+      - firewalld_active.rc == 0
