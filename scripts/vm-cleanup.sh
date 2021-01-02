@@ -27,7 +27,7 @@ passwd -l root
 find /etc/ssh -maxdepth 1 -mindepth 1 -type f -name 'ssh_host*_key*' -delete
 
 # Zero out the free space to save space in the final image
-dd if=/dev/zero of=/EMPTY bs=1M || true
+dd if=/dev/zero of=/EMPTY bs=1M 2>&1 || true
 rm -f /EMPTY
 
 # Clear history
