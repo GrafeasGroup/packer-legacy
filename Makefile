@@ -77,7 +77,7 @@ vagrant-release: vagrant-login vagrant-box
 	$(CURL) --fail --show-error --silent --location \
 		--header 'Authorization: Bearer $(VAGRANT_CLOUD_TOKEN)' \
 		--request PUT \
-		$(VAGRANT_API_BASE)/api/v1/boxes/$(VAGRANT_BOX_NAME)/$(IMAGE_VERSION)/release
+		$(VAGRANT_API_BASE)/api/v1/box/$(VAGRANT_BOX_NAME)/version/$(IMAGE_VERSION)/release
 
 .PHONY: vagrant-clean
 vagrant-clean:
