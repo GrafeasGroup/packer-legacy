@@ -15,7 +15,7 @@
 - name: Disallow remote root login
   lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: '^(#+\s*PermitRootLogin|PermitRootLogin yes)'
+    regexp: '^PermitRootLogin.+$'
     line: 'PermitRootLogin no'
     group: root
     owner: root
