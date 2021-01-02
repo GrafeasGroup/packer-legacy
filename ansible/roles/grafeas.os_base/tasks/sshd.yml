@@ -40,7 +40,10 @@
     proto: tcp
     setype: ssh_port_t
     state: present
-  when: ansible_selinux is defined and ansible_selinux_python_present
+  when:
+    - ansible_selinux is defined
+    - ansible_selinux_python_present
+    - ansible_selinux.status != "disabled"
   become: true
 
 # vim: ft=yaml.ansible
