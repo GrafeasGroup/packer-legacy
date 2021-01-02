@@ -1,12 +1,18 @@
 ---
 
-- name: Permit SSH port through firewalld
-  ansible.posix.firewalld:
-    port: '{{ ssh_port }}/tcp'
-    state: enabled
-    permanent: true
-    immediate: true
-    offline: true
+- name: Assign non-default SSH port to service in firewalld
+  template:
+    dest: /lib/firewalld/services/ssh.xml
+    src: ssh.xml.j2
+    owner: root
+    group: root
+    mode: '644'
+  vars:
+    ssh_ports:
+      - 22  # This is to avoid closing the connection partway through applying changes to sshd and firewalld
+      - '{{ ssh_port }}'
+  when: ssh_port != 22
+  notify: reload firewalld
   become: true
 
 - name: Permit ssh ports from public zone in firewalld
