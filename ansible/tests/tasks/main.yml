@@ -5,6 +5,8 @@
 
 - name: Custom Python Installation
   include_tasks: python_version.yml
+  tags:
+    - notest
 
 - name: System Logging
   include_tasks: journald.yml
