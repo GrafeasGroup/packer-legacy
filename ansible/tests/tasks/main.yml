@@ -1,5 +1,10 @@
 ---
 
+# Uncomment these lines to dump out the ansible facts gathered:
+# - debug:
+#     var: ansible_facts
+# - assert: that=false
+
 - name: Automated Access
   include_tasks: automation_user.yml
 

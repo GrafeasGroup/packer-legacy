@@ -8,6 +8,17 @@
       retries: 5
       delay: 3
 
+    - name: Docker check
+      command:
+        cmd: awk -F/ '$2 == "docker"' /proc/1/cgroup
+      changed_when: false
+      register: docker_check
+      become: true
+
+    - name: Set fact whether inside of a container
+      set_fact:
+        is_docker: '{{ not (not docker_check.stdout) }}'
+
   roles:
     - name: grafeas.os_base
     - name: thelonelyghost.python
