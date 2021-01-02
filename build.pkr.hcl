@@ -84,21 +84,13 @@ build {
   provisioner "shell" {
     scripts = [
       "${path.root}/scripts/cleanup.sh",
+      "${path.root}/scripts/zero-out-disk.sh",
 
       # This allows us to remove unique identifiers from
       # the template and minimize image size at the end.
       "${path.root}/scripts/vm-cleanup.sh",
     ]
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
-  }
-
-  provisioner "shell" {
-    scripts = [
-      "${path.root}/scripts/zero-out-disk.sh",
-    ]
-    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} sh -c {{ .Path }}"
-
-    only = ["linode.main"]
   }
 
   post-processor "vagrant-cloud" {
