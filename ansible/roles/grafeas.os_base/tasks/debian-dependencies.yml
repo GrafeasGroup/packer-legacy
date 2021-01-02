@@ -32,9 +32,6 @@
     autoclean: true
     autoremove: true
     update_cache: true
-  # command:
-  #   cmd: |
-  #     apt-get install -t buster-backports -y iptables
   become: true
   when:
     - (ansible_facts.distribution == "Debian")

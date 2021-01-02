@@ -23,8 +23,11 @@ done
 passwd -d root
 passwd -l root
 
-# Remove ssh host keys
+# Remove default ssh host keys
 find /etc/ssh -maxdepth 1 -mindepth 1 -type f -name 'ssh_host*_key*' -delete
+for key_type in rsa dsa ecdsa; do
+  ssh-keygen -t "${key_type}" -f /etc/ssh/ssh_host_"${key_type}"_key -N ''
+done
 
 # Zero out the free space to save space in the final image
 dd if=/dev/zero of=/EMPTY bs=1M 2>&1 || true
