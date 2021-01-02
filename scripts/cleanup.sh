@@ -33,6 +33,7 @@ for directory in /root /home; do
   find "$directory" -maxdepth 1 -mindepth 1 -type f -name '.python_history' -delete
   find "$directory" -maxdepth 1 -mindepth 1 -type d -name '.cache' -print0 | xargs -0 -I{} rm -rf {}
   find "$directory" -maxdepth 1 -mindepth 1 -type d -name '.pki' -print0 | xargs -0 -I{} rm -rf {}
+  find "$directory" -maxdepth 1 -mindepth 1 -type d -name '~*' -print0 | xargs -0 -I{} rm -rf {}
   if [ -e "${directory}/.ssh/known_hosts" ]; then
     rm -rf "${directory}/.ssh/known_hosts"
   fi
