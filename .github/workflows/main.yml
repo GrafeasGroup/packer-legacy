@@ -19,7 +19,8 @@ defaults:
     shell: bash
 
 env:
-  PKR_VAR_linode_api_key: ${{ secrets.LINODE_API_KEY }}
+  LINODE_TOKEN: ${{ secrets.LINODE_API_KEY }}
+  VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -130,7 +131,8 @@ jobs:
 
   build-docker:
     name: Docker image
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ 'false' }}
 
     runs-on: ubuntu-20.04
     needs:
