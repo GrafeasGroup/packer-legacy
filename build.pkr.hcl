@@ -84,6 +84,7 @@ build {
   provisioner "shell" {
     scripts = [
       "${path.root}/scripts/cleanup.sh",
+      "${path.root}/scripts/sshd-setup.sh",
 
       # This allows us to remove unique identifiers from
       # the template and minimize image size at the end.
