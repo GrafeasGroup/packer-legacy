@@ -36,7 +36,7 @@
 
 - name: Permit SSH port in SELinux configuration
   community.general.seport:
-    ports: '{{ (ssh_port ~ ",22").split(",") ] | unique | join(",") }}'
+    ports: '{{ (ssh_port ~ ",22").split(",") | unique | join(",") }}'
     proto: tcp
     setype: ssh_port_t
     state: present

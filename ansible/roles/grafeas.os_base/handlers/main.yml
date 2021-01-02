@@ -32,3 +32,9 @@
   yum:
     update_cache: true
   become: true
+
+- name: apt-cache update
+  listen: update apt cache
+  apt:
+    update_cache: true
+  become: true

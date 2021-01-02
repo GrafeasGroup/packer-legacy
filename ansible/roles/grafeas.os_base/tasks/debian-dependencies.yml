@@ -1,4 +1,46 @@
 ---
+- name: Install backports repo
+  blockinfile:
+    path: /etc/apt/sources.list
+    block: |
+      deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main
+      deb-src http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main
+    mode: '644'
+    owner: root
+    group: root
+  notify: apt-cache update
+  become: true
+  when: ansible_facts.distribution == "Debian"
+
+- meta: flush_handlers
+
+- name: Detect iptables version
+  shell:
+    cmd: |
+      dpkg-query -l | awk '/iptables/ { print $3 }'
+  become: true
+  changed_when: false
+  register: buggy_iptables
+
+# https://github.com/saltstack/salt/issues/55110#issuecomment-546735717
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=931722
+- name: Fix buggy iptables
+  apt:
+    name: iptables
+    default_release: '{{ ansible_facts.distribution_release }}-backports'
+    state: latest
+    autoclean: true
+    autoremove: true
+    update_cache: true
+  # command:
+  #   cmd: |
+  #     apt-get install -t buster-backports -y iptables
+  become: true
+  when:
+    - (ansible_facts.distribution == "Debian")
+    - (ansible_facts.distribution_release == "buster")
+    - buggy_iptables.stdout is version("1.8.3", operator="lt", strict=False)
+
 - name: Install apt packages
   apt:
     name:
@@ -8,7 +50,6 @@
     autoclean: true
     autoremove: true
     update_cache: true
-  when: ansible_pkg_mgr == 'apt'
   become: true
 
 # vim: ft=yaml.ansible
