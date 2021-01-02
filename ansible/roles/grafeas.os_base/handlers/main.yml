@@ -38,3 +38,6 @@
   apt:
     update_cache: true
   become: true
+
+- name: collect facts
+  setup:

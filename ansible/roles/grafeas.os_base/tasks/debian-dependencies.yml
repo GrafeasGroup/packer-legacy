@@ -46,10 +46,12 @@
     name:
       - openssh-server
       - firewalld
+      - python3-selinux
     state: present
     autoclean: true
     autoremove: true
     update_cache: true
+  notify: collect facts
   become: true
 
 # vim: ft=yaml.ansible
