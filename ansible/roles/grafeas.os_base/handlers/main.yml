@@ -6,10 +6,11 @@
     state: restarted
   become: true
 
-- name: reload firewalld
+- name: restart firewalld
+  listen: reload firewalld
   systemd:
     name: firewalld
-    state: reloaded
+    state: restarted
   when:
     - ansible_facts.services['firewalld.service'] is defined
     - ansible_facts.services['firewalld.service'].state == 'running'
