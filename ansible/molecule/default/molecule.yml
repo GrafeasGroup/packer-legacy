@@ -11,10 +11,21 @@ platforms:
     box: generic/debian10
     memory: 512
     cpus: 1
+    interfaces:
+      - network_name: forwarded_port
+        id: ssh-alt
+        guest: 8022  # see `ssh_port` in ../../tests/group_vars/all/ssh.yml
+        host_ip: '127.0.0.1'
+        host: 9999
 provisioner:
   name: ansible
+  inventory:
+    links:
+      group_vars: ../../tests/group_vars
 verifier:
   name: ansible
+  env:
+    ANSIBLE_REMOTE_PORT: 9999  # Same as above on `ssh-alt` for the forwarded host port
 lint: |
   set -e
   yamllint .
