@@ -4,7 +4,7 @@ name: Release Drafter
 on:  # yamllint disable-line rule:truthy
   push:
     branches:
-      - master
+      - main
 
 jobs:
   update_release_draft:
